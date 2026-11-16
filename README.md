@@ -184,7 +184,7 @@ The package is also published to GitHub Packages as
 pip install json-schema-semver
 ```
 
-There are wheels for Python 3.9 to 3.13 on Linux (x86_64 and arm64, glibc
+There are wheels for Python 3.11 to 3.15 on Linux (x86_64 and arm64, glibc
 2.28 or later) and macOS 14 or later (Apple silicon). They are also attached
 to each release.
 

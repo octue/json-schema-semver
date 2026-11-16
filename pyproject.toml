@@ -7,7 +7,7 @@ authors = [
     {name = "Tom Clark", email = "tom@octue.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = []
 license = {text = "AGPL-3.0-or-later"}
 keywords = ["json-schema", "jsonschema", "semver", "semantic-versioning", "compatibility"]
@@ -43,7 +43,7 @@ cmake.args = [
 # The wheels published to PyPI. The vendored dependencies need a compiler with
 # C++23 library support, which rules out images older than `manylinux_2_28`
 [tool.cibuildwheel]
-build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+build = "cp311-* cp312-* cp313-* cp314-* cp315-*"
 skip = "*-musllinux_*"
 archs = ["native"]
 manylinux-x86_64-image = "manylinux_2_28"

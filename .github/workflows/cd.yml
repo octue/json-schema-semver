@@ -39,10 +39,95 @@ jobs:
           echo "PATH=$PATH:$(pwd)/emsdk/upstream/emscripten" >> $GITHUB_ENV
       - run: make -C bindings/webassembly compile
       - run: make -C bindings/webassembly test
-      - run: cd bindings/webassembly && npm version ${{ github.ref_name }} && npm publish
+      - name: Set package version
+        working-directory: bindings/webassembly
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]
+          then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="0.0.0-dev"
+          fi
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+
+      # The tarball is attached to the GitHub release, so that the package
+      # can be installed from its URL without a token
+      - run: npm pack
+        working-directory: bindings/webassembly
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: bindings/webassembly/*.tgz
+          if-no-files-found: error
+
+      - run: npm publish
+        working-directory: bindings/webassembly
         if: github.ref_type == 'tag'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  cli:
+    strategy:
+      matrix:
+        platform:
+          - os: ubuntu-24.04
+            name: linux-x86_64
+          - os: ubuntu-24.04-arm
+            name: linux-aarch64
+          - os: macos-15
+            name: macos-arm64
+
+    runs-on: ${{ matrix.platform.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]
+          then
+            echo "JSS_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "JSS_VERSION=0.0.0-dev" >> "$GITHUB_ENV"
+          fi
+
+      # A fully static binary that runs on any Linux distribution
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        run: >
+          docker build . --file cli/Dockerfile --progress plain
+          --build-arg "JSS_VERSION=$JSS_VERSION" --output dist/cli
+
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          cmake -S . -B ./build \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DJSS_CLI:BOOL=ON \
+            -DJSS_TESTS:BOOL=OFF \
+            -DJSS_PYTHON:BOOL=OFF \
+            -DJSS_VERSION:STRING="$JSS_VERSION" \
+            -DBUILD_SHARED_LIBS:BOOL=OFF \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=14.0
+          cmake --build ./build --config Release --target octue_jss_cli --parallel 4
+          mkdir -p dist/cli
+          cp ./build/cli/json-schema-semver dist/cli
+
+      - run: sh test/cli/run.sh dist/cli/json-schema-semver
+      - run: test "$(dist/cli/json-schema-semver --version)" = "$JSS_VERSION"
+
+      # The name has no version, so that the latest release can be downloaded
+      # from a fixed URL
+      - name: Package
+        run: |
+          cp LICENSE NOTICE dist/cli
+          tar -czf "json-schema-semver-${{ matrix.platform.name }}.tar.gz" \
+            -C dist/cli json-schema-semver LICENSE NOTICE
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli-${{ matrix.platform.name }}
+          path: json-schema-semver-${{ matrix.platform.name }}.tar.gz
+          if-no-files-found: error
 
   python:
     strategy:
@@ -121,22 +206,23 @@ jobs:
           path: bindings/python/dist/*
 
   github:
-    needs: [ python, python-docker ]
+    needs: [ npm, python, python-docker, cli ]
     runs-on: ubuntu-latest
     if: github.ref_type == 'tag'
     steps:
       - uses: actions/checkout@v4
+      # The Python wheels, the command-line tool and the npm package
       - uses: actions/download-artifact@v4
         with:
-          path: bindings/python/dist
+          path: release
           merge-multiple: true
-      - run: tree bindings/python/dist
+      - run: cd release && sha256sum -- * > ../SHA256SUMS && mv ../SHA256SUMS .
+      - run: tree release && cat release/SHA256SUMS
       - run: gh config set prompt disabled
         env:
           GH_TOKEN: ${{ github.token }}
       - run: |
           gh release create ${{ github.ref_name }} --draft=false --title ${{ github.ref_name }} --target "$GITHUB_SHA" --generate-notes
-          gh release upload --clobber ${{ github.ref_name }} bindings/python/dist/*
-        if: github.ref_type == 'tag'
+          gh release upload --clobber ${{ github.ref_name }} release/*
         env:
           GH_TOKEN: ${{ github.token }}

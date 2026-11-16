@@ -26,7 +26,7 @@ JSON
 
 run compare "$SCHEMAS/unknown.json" "$SCHEMAS/base.json"
 expect_code 2
-grep --quiet '"version": null' "$TMP/stdout"
+grep -q '"version": null' "$TMP/stdout"
 
 run compare "$SCHEMAS/base.json"
 expect_code 1

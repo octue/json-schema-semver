@@ -3,27 +3,27 @@
 # The default is the major level
 run suggest "$SCHEMAS/major.json" --base "$SCHEMAS/base.json" --base-version 0.3.1
 expect_code 0
-grep --quiet '"version": "1.0.0"' "$TMP/stdout"
+grep -q '"version": "1.0.0"' "$TMP/stdout"
 
 run suggest "$SCHEMAS/major.json" --base "$SCHEMAS/base.json" --base-version 0.3.1 --breaking major
 expect_code 0
-grep --quiet '"version": "1.0.0"' "$TMP/stdout"
+grep -q '"version": "1.0.0"' "$TMP/stdout"
 
 run suggest "$SCHEMAS/major.json" --base "$SCHEMAS/base.json" --base-version 0.3.1 --breaking minor
 expect_code 0
-grep --quiet '"version": "0.4.0"' "$TMP/stdout"
+grep -q '"version": "0.4.0"' "$TMP/stdout"
 
 run suggest "$SCHEMAS/minor.json" --base "$SCHEMAS/base.json" --base-version 0.3.1 --breaking minor
 expect_code 0
-grep --quiet '"version": "0.4.0"' "$TMP/stdout"
+grep -q '"version": "0.4.0"' "$TMP/stdout"
 
 run suggest "$SCHEMAS/patch.json" --base "$SCHEMAS/base.json" --base-version 0.3.1 --breaking minor
 expect_code 0
-grep --quiet '"version": "0.3.2"' "$TMP/stdout"
+grep -q '"version": "0.3.2"' "$TMP/stdout"
 
 run suggest "$SCHEMAS/major.json" --base "$SCHEMAS/base.json" --base-version 0.0.3 -k patch
 expect_code 0
-grep --quiet '"version": "0.0.4"' "$TMP/stdout"
+grep -q '"version": "0.0.4"' "$TMP/stdout"
 
 # The base version is too high for the breaking level
 run suggest "$SCHEMAS/major.json" --base "$SCHEMAS/base.json" --base-version 0.3.1 --breaking patch

@@ -1,6 +1,6 @@
 [project]
 name = "json-schema-semver"
-version = "0.2.0"
+version = "0.2.1"
 description = "Compare two JSON Schemas and work out the semantic version of the new one"
 authors = [
     {name = "Juan Cruz Viotti", email = "jv@jviotti.com"},

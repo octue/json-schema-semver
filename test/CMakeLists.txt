@@ -45,6 +45,8 @@ sourcemeta_googletest(PROJECT octue NAME jss FOLDER "Octue"
     2020_12_is_compatible_with_validation_uniqueitems_test.cc
     2020_12_is_compatible_with_test.cc
     2020_12_version_test.cc
-    draft7_version_test.cc)
+    draft7_version_test.cc
+    suggest_test.cc)
 
 target_link_libraries(octue_jss_unit PRIVATE octue::jss)
+target_link_libraries(octue_jss_unit PRIVATE sourcemeta::core::semver)

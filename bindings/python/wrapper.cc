@@ -1,58 +1,25 @@
 #include <octue/jss.h>
+#include <octue/jss_suggest.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-static auto version(pybind11::object from, pybind11::object to)
-    -> pybind11::dict {
-  const auto from_string{pybind11::module_::import("json")
-                             .attr("dumps")(from)
-                             .cast<std::string>()};
-  const auto to_string{
-      pybind11::module_::import("json").attr("dumps")(to).cast<std::string>()};
-  const auto from_json = sourcemeta::core::parse_json(from_string);
-  const auto to_json = sourcemeta::core::parse_json(to_string);
+#include <optional> // std::optional, std::nullopt
+#include <string>   // std::string
 
-  const auto result{octue::jss::version(from_json, to_json)};
-  pybind11::dict result_dict;
+static auto to_json(const pybind11::object &value) -> sourcemeta::core::JSON {
+  return sourcemeta::core::parse_json(pybind11::module_::import("json")
+                                          .attr("dumps")(value)
+                                          .cast<std::string>());
+}
 
-  if (result.version.has_value()) {
-    switch (result.version.value()) {
-      case octue::jss::SemVer::Major:
-        result_dict["version"] = "major";
-        break;
-      case octue::jss::SemVer::Minor:
-        result_dict["version"] = "minor";
-        break;
-      case octue::jss::SemVer::Patch:
-        result_dict["version"] = "patch";
-        break;
-      case octue::jss::SemVer::Equal:
-        result_dict["version"] = "equal";
-        break;
-    }
-  } else {
-    result_dict["version"] = pybind11::none();
-  }
-
+static auto to_list(const std::vector<octue::jss::Trace> &traces)
+    -> pybind11::list {
   pybind11::list traces_list;
-  for (const auto &trace : result.traces) {
+  for (const auto &trace : traces) {
     pybind11::dict trace_dict;
-
-    switch (trace.compatibility) {
-      case octue::jss::Compatibility::Compatible:
-        trace_dict["compatibility"] = "compatible";
-        break;
-      case octue::jss::Compatibility::Incompatible:
-        trace_dict["compatibility"] = "incompatible";
-        break;
-      case octue::jss::Compatibility::Skip:
-        trace_dict["compatibility"] = "skip";
-        break;
-      case octue::jss::Compatibility::Unknown:
-        trace_dict["compatibility"] = "unknown";
-        break;
-    }
+    trace_dict["compatibility"] =
+        std::string{octue::jss::to_string(trace.compatibility)};
 
     if (trace.left.has_value()) {
       trace_dict["left"] = sourcemeta::core::to_string(trace.left.value());
@@ -69,16 +36,76 @@ static auto version(pybind11::object from, pybind11::object to)
     traces_list.append(std::move(trace_dict));
   }
 
-  result_dict["traces"] = std::move(traces_list);
+  return traces_list;
+}
+
+static auto version(pybind11::object from, pybind11::object to)
+    -> pybind11::dict {
+  // The traces point into the schemas, so these must outlive the result
+  const auto from_json{to_json(from)};
+  const auto to_json_document{to_json(to)};
+  const auto result{octue::jss::version(from_json, to_json_document)};
+  pybind11::dict result_dict;
+
+  if (result.version.has_value()) {
+    result_dict["version"] =
+        std::string{octue::jss::to_string(result.version.value())};
+  } else {
+    result_dict["version"] = pybind11::none();
+  }
+
+  result_dict["traces"] = to_list(result.traces);
+  return result_dict;
+}
+
+static auto suggest(pybind11::object base, pybind11::object proposed,
+                    std::optional<std::string> base_version,
+                    const std::string &breaking,
+                    const std::string &initial_version) -> pybind11::dict {
+  const auto breaking_level{octue::jss::to_breaking(breaking)};
+  if (!breaking_level.has_value()) {
+    throw pybind11::value_error(
+        "`breaking` must be one of 'major', 'minor' or 'patch'");
+  }
+
+  const std::optional<sourcemeta::core::JSON> base_json{
+      base.is_none() ? std::nullopt
+                     : std::optional<sourcemeta::core::JSON>{to_json(base)}};
+
+  // The traces point into the schemas, so these must outlive the result
+  const auto proposed_json{to_json(proposed)};
+
+  octue::jss::Suggestion suggestion;
+  try {
+    suggestion = octue::jss::suggest(base_json, proposed_json, base_version,
+                                     breaking_level.value(), initial_version);
+  } catch (const octue::jss::InvalidVersionError &error) {
+    throw pybind11::value_error(error.what());
+  } catch (const octue::jss::BreakingLevelError &error) {
+    throw pybind11::value_error(error.what());
+  }
+
+  pybind11::dict result_dict;
+  if (suggestion.version.has_value()) {
+    result_dict["version"] = suggestion.version.value();
+  } else {
+    result_dict["version"] = pybind11::none();
+  }
+
+  if (suggestion.change.has_value()) {
+    result_dict["change"] =
+        std::string{octue::jss::to_string(suggestion.change.value())};
+  } else {
+    result_dict["change"] = pybind11::none();
+  }
+
+  result_dict["traces"] = to_list(suggestion.traces);
   return result_dict;
 }
 
 static auto get_base_dialect(pybind11::object schema)
     -> std::optional<std::string> {
-  const auto schema_string{pybind11::module_::import("json")
-                               .attr("dumps")(schema)
-                               .cast<std::string>()};
-  const auto schema_json{sourcemeta::core::parse_json(schema_string)};
+  const auto schema_json{to_json(schema)};
   const auto base_dialect{sourcemeta::core::base_dialect(
       schema_json, sourcemeta::core::schema_resolver)};
   if (base_dialect.has_value()) {
@@ -92,4 +119,11 @@ PYBIND11_MODULE(json_schema_semver, m) {
         "Infer the base dialect from a JSON Schema");
   m.def("version", &version,
         "Compute the SemVer version bump from two schemas");
+  m.def("suggest", &suggest,
+        "Suggest the semantic version of a proposed schema, given a base "
+        "schema (or None if there is none) and optionally its version",
+        pybind11::arg("base"), pybind11::arg("proposed"),
+        pybind11::arg("base_version") = pybind11::none(),
+        pybind11::arg("breaking") = "major",
+        pybind11::arg("initial_version") = "0.0.1");
 }

@@ -11,7 +11,7 @@ BUILD := build
 CMAKE_BUILD := $(BUILD)/cmake
 
 # Flags
-CXXFLAGS ?= -O3 -std=c++23 -flto \
+CXXFLAGS ?= -O3 -std=c++23 -flto -fexceptions \
 	-I$(ROOT)/src/include \
 	-I$(CMAKE_BUILD)/src/include \
 	-I$(ROOT)/vendor/core/src/core/json/include \
@@ -39,6 +39,7 @@ CXXFLAGS ?= -O3 -std=c++23 -flto \
 # those in turn depend on PCRE2 and each other.
 STATIC_LIBS := \
 	$(CMAKE_BUILD)/src/liboctue_jss.a \
+	$(CMAKE_BUILD)/vendor/core/src/core/semver/libsourcemeta_core_semver.a \
 	$(CMAKE_BUILD)/vendor/core/src/core/jsonschema/libsourcemeta_core_jsonschema.a \
 	$(CMAKE_BUILD)/vendor/core/src/core/jsonpointer/libsourcemeta_core_jsonpointer.a \
 	$(CMAKE_BUILD)/vendor/core/src/core/regex/libsourcemeta_core_regex.a \
@@ -50,6 +51,7 @@ STATIC_LIBS := \
 	$(CMAKE_BUILD)/vendor/core/src/lang/numeric/libsourcemeta_core_numeric.a \
 	$(CMAKE_BUILD)/vendor/core/src/lang/io/libsourcemeta_core_io.a
 
+# We need C++ exceptions to report invalid versions when suggesting a version
 # See https://emscripten.org/docs/tools_reference/settings_reference.html
 LDFLAGS ?= -lembind -s EXPORT_NAME=jss -DNDEBUG \
 					 -s EVAL_CTORS=2 -s WASM=1 -s NO_EXIT_RUNTIME=1 -s ASSERTIONS=0 \
@@ -71,6 +73,8 @@ $(CMAKE_BUILD)/CMakeCache.txt: | $(BUILD)
 		-DCMAKE_BUILD_TYPE=Release \
 		-DJSS_TESTS=OFF \
 		-DJSS_PYTHON=OFF \
+		-DJSS_CLI=OFF \
+		-DCMAKE_CXX_FLAGS=-fexceptions \
 		-DBUILD_SHARED_LIBS=OFF \
 		-DCMAKE_COMPILE_WARNING_AS_ERROR=OFF \
 		-DSOURCEMETA_CORE_LANG_PARALLEL=OFF \
@@ -81,7 +85,6 @@ $(CMAKE_BUILD)/CMakeCache.txt: | $(BUILD)
 		-DSOURCEMETA_CORE_TIME=OFF \
 		-DSOURCEMETA_CORE_CRYPTO=OFF \
 		-DSOURCEMETA_CORE_URITEMPLATE=OFF \
-		-DSOURCEMETA_CORE_SEMVER=OFF \
 		-DSOURCEMETA_CORE_HTML=OFF \
 		-DSOURCEMETA_CORE_EXTENSION_ALTERSCHEMA=OFF \
 		-DSOURCEMETA_CORE_EXTENSION_EDITORSCHEMA=OFF \

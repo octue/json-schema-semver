@@ -1,4 +1,4 @@
-name: CD
+name: cd
 
 # Every release artefact is built and tested on pull requests into `main`, so
 # that problems show up before a release is attempted. Nothing is published
@@ -30,12 +30,15 @@ jobs:
     env:
       EMSDK_VERSION: 4.0.5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          registry-url: 'https://npm.pkg.github.com'
-      - run: |
+          node-version: "20.x"
+          registry-url: "https://npm.pkg.github.com"
+      - name: Add emscripten to path
+        run: |
           git clone --depth 1 https://github.com/emscripten-core/emsdk.git
           ./emsdk/emsdk install ${{ env.EMSDK_VERSION }}
           ./emsdk/emsdk activate ${{ env.EMSDK_VERSION }}
@@ -46,8 +49,10 @@ jobs:
           # executable, causing GNU Make's `execvp` to fail with
           # "Permission denied".
           echo "PATH=$PATH:$(pwd)/emsdk/upstream/emscripten" >> $GITHUB_ENV
-      - run: make -C bindings/webassembly compile
-      - run: make -C bindings/webassembly test
+      - name: Compile WASM
+        run: make -C bindings/webassembly compile
+      - name: Test WASM
+        run: make -C bindings/webassembly test
       - name: Set package version
         working-directory: bindings/webassembly
         run: |
@@ -61,15 +66,18 @@ jobs:
 
       # The tarball is attached to the GitHub release, so that the package
       # can be installed from its URL without a token
-      - run: npm pack
+      - name: NPM pack
+        run: npm pack
         working-directory: bindings/webassembly
-      - uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: npm-package
           path: bindings/webassembly/*.tgz
           if-no-files-found: error
 
-      - run: npm publish
+      - name: NPM publish
+        run: npm publish
         working-directory: bindings/webassembly
         if: github.ref_type == 'tag'
         env:
@@ -88,7 +96,8 @@ jobs:
 
     runs-on: ${{ matrix.platform.os }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Get version
         run: |
@@ -121,8 +130,11 @@ jobs:
           mkdir -p dist/cli
           cp ./build/cli/json-schema-semver dist/cli
 
-      - run: sh test/cli/run.sh dist/cli/json-schema-semver
-      - run: test "$(dist/cli/json-schema-semver --version)" = "$JSS_VERSION"
+      - name: Test CLI
+        run: sh test/cli/run.sh dist/cli/json-schema-semver
+
+      - name: Assert version
+        run: test "$(dist/cli/json-schema-semver --version)" = "$JSS_VERSION"
 
       # The name has no version, so that the latest release can be downloaded
       # from a fixed URL
@@ -132,7 +144,8 @@ jobs:
           tar -czf "json-schema-semver-${{ matrix.platform.name }}.tar.gz" \
             -C dist/cli json-schema-semver LICENSE NOTICE
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: cli-${{ matrix.platform.name }}
           path: json-schema-semver-${{ matrix.platform.name }}.tar.gz
@@ -144,11 +157,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-24.04, ubuntu-24.04-arm, macos-15 ]
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15]
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set package version
         if: github.ref_type == 'tag'
@@ -160,11 +174,13 @@ jobs:
 
       # To keep pull requests quick, they only build for the oldest and the
       # newest Python versions that we support
-      - uses: pypa/cibuildwheel@v4.3.5
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.3.5
         env:
           CIBW_BUILD: ${{ github.event_name == 'pull_request' && 'cp311-* cp315-*' || 'cp311-* cp312-* cp313-* cp314-* cp315-*' }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: python-wheels-${{ matrix.os }}
           path: wheelhouse/*.whl
@@ -176,7 +192,9 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v6
 
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set package version
         if: github.ref_type == 'tag'
         run: |
@@ -184,26 +202,44 @@ jobs:
           VERSION="${VERSION#v}"
           uv version --no-sync "$VERSION"
 
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
+      - name: Setup docker QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - run: docker build --tag json-schema-semver-arm64 . --file bindings/python/Dockerfile --progress plain --platform linux/arm64
-      - run: docker build --tag json-schema-semver-amd64 . --file bindings/python/Dockerfile --progress plain --platform linux/amd64
-      - run: sleep 5
-      - run: docker create --name json-schema-semver-builder-arm64 json-schema-semver-arm64
-      - run: docker create --name json-schema-semver-builder-amd64 json-schema-semver-amd64
-      - run: sleep 5
-      - run: mkdir -p bindings/python/dist/docker
-      - run: docker cp json-schema-semver-builder-arm64:/source/bindings/python/dist bindings/python/dist/docker
-      - run: docker cp json-schema-semver-builder-amd64:/source/bindings/python/dist bindings/python/dist/docker
-      - run: sleep 5
-      - run: mv bindings/python/dist/docker/dist/*.whl bindings/python/dist
-      - run: rm -rf bindings/python/dist/docker
-      - run: sha256sum bindings/python/dist/*.whl
+      - name: Setup docker buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build wheel (arm64)
+        run: docker build --tag json-schema-semver-arm64 . --file bindings/python/Dockerfile --progress plain --platform linux/arm64
+      - name: Build wheel (amd64)
+        run: docker build --tag json-schema-semver-amd64 . --file bindings/python/Dockerfile --progress plain --platform linux/amd64
+      - name: Wait before creating containers
+        run: sleep 5
+      - name: Create container (arm64)
+        run: docker create --name json-schema-semver-builder-arm64 json-schema-semver-arm64
+      - name: Create container (amd64)
+        run: docker create --name json-schema-semver-builder-amd64 json-schema-semver-amd64
+      - name: Wait before copying wheels
+        run: sleep 5
+      - name: Create output directory
+        run: mkdir -p bindings/python/dist/docker
+      - name: Copy wheel out of container (arm64)
+        run: docker cp json-schema-semver-builder-arm64:/source/bindings/python/dist bindings/python/dist/docker
+      - name: Copy wheel out of container (amd64)
+        run: docker cp json-schema-semver-builder-amd64:/source/bindings/python/dist bindings/python/dist/docker
+      - name: Wait before collecting wheels
+        run: sleep 5
+      - name: Collect wheels
+        run: mv bindings/python/dist/docker/dist/*.whl bindings/python/dist
+      - name: Remove temporary directory
+        run: rm -rf bindings/python/dist/docker
+      - name: Print wheel checksums
+        run: sha256sum bindings/python/dist/*.whl
       # `unzip` only takes one archive at a time
-      - run: for wheel in bindings/python/dist/*.whl; do unzip -t "$wheel"; done
+      - name: Test wheel integrity
+        run: for wheel in bindings/python/dist/*.whl; do unzip -t "$wheel"; done
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: python-bindings-docker
           path: bindings/python/dist/*
@@ -212,7 +248,7 @@ jobs:
   # built, on every platform it supports, by serving the tool in the same
   # layout as a release
   action-prerelease:
-    needs: [ cli ]
+    needs: [cli]
     strategy:
       fail-fast: false
       matrix:
@@ -225,44 +261,64 @@ jobs:
             name: macos-arm64
     runs-on: ${{ matrix.platform.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           name: cli-${{ matrix.platform.name }}
           path: ${{ runner.temp }}/release
-      - run: |
+
+      - name: Add release URL to env
+        run: |
           cd "$RUNNER_TEMP/release"
           shasum -a 256 -- *.tar.gz > SHA256SUMS
           echo "JSON_SCHEMA_SEMVER_RELEASE_URL=file://$RUNNER_TEMP/release" >> "$GITHUB_ENV"
-      - id: version
+
+      - name: Action self-test (1/2)
+        id: version
         uses: ./
         with:
           path: test/cli/schemas/minor.json
           base_path: test/cli/schemas/base.json
           base_version: 1.2.3
-      - run: |
+
+      - name: Action self-test (2/2)
+        run: |
           test "${{ steps.version.outputs.version }}" = "1.3.0"
           test "${{ steps.version.outputs.change }}" = "minor"
 
   github:
-    needs: [ npm, wheels, python-docker, cli, action-prerelease ]
+    needs: [npm, wheels, python-docker, cli, action-prerelease]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     if: github.ref_type == 'tag'
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       # The Python wheels, the command-line tool and the npm package
-      - uses: actions/download-artifact@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           path: release
           merge-multiple: true
-      - run: cd release && sha256sum -- * > ../SHA256SUMS && mv ../SHA256SUMS .
-      - run: tree release && cat release/SHA256SUMS
-      - run: gh config set prompt disabled
+
+      - name: Write release checksum
+        run: cd release && sha256sum -- * > ../SHA256SUMS && mv ../SHA256SUMS .
+
+      - name: Print release contents
+        run: tree release && cat release/SHA256SUMS
+
+      - name: Setup gh
+        run: gh config set prompt disabled
         env:
           GH_TOKEN: ${{ github.token }}
-      - run: |
+
+      - name: Create release on GitHub
+        run: |
           gh release create ${{ github.ref_name }} --draft=false --title ${{ github.ref_name }} --target "$GITHUB_SHA" --generate-notes
           gh release upload --clobber ${{ github.ref_name }} release/*
         env:
@@ -271,25 +327,30 @@ jobs:
   # Check that the GitHub Action can download the tool from the new release,
   # without a token, on every platform it supports
   action-release:
-    needs: [ github ]
+    needs: [github]
     if: github.ref_type == 'tag'
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-24.04, ubuntu-24.04-arm, macos-15 ]
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - id: version
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Action self-test (1/2)
+        id: version
         uses: ./
         with:
           path: test/cli/schemas/minor.json
           base_path: test/cli/schemas/base.json
           base_version: 1.2.3
           cli_version: ${{ github.ref_name }}
-      - run: |
+
+      - name: Action self-test (2/2)
+        run: |
           test "${{ steps.version.outputs.version }}" = "1.3.0"
           test "${{ steps.version.outputs.change }}" = "minor"
 
@@ -298,7 +359,7 @@ jobs:
   # (`cd.yml`) and the `pypi` environment set up as a trusted publisher.
   # This comes last because a version cannot be published to PyPI twice
   pypi:
-    needs: [ wheels, github, action-release ]
+    needs: [wheels, github, action-release]
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     environment:
@@ -307,20 +368,25 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           pattern: python-wheels-*
           path: dist
           merge-multiple: true
-      - run: ls -l dist
-      - uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: List dist directory contents
+        run: ls -l dist
+
+      - name: Publish release to pypi
+        uses: pypa/gh-action-pypi-publish@release/v1
 
   # Publish the npm package to npmjs.com with trusted publishing, which needs
   # no token. The package on npmjs.com must have this repository, this
   # workflow file (`cd.yml`) and the `npm` environment set up as a trusted
   # publisher. This publishes the same tarball that is attached to the release
   npmjs:
-    needs: [ npm, github, action-release ]
+    needs: [npm, github, action-release]
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     environment:
@@ -329,15 +395,24 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/setup-node@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
       # Trusted publishing needs npm 11.5.1 or later
-      - run: npm install --global npm@11 && npm --version
-      - uses: actions/download-artifact@v4
+      - name: Install npm
+        run: npm install --global npm@11 && npm --version
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           name: npm-package
           path: dist
-      - run: ls -l dist
-      - run: npm publish dist/*.tgz --access public
+
+      - name: List dist directory
+        run: ls -l dist
+
+      - name: Publish to npmjs
+        run: npm publish dist/*.tgz --access public

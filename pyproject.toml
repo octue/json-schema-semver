@@ -1,7 +1,7 @@
 [project]
 name = "json-schema-semver"
 version = "0.2.0"
-description = ""
+description = "Compare two JSON Schemas and work out the semantic version of the new one"
 authors = [
     {name = "Juan Cruz Viotti", email = "jv@jviotti.com"},
     {name = "Tom Clark", email = "tom@octue.com"}
@@ -9,6 +9,21 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = []
+license = {text = "AGPL-3.0-or-later"}
+keywords = ["json-schema", "jsonschema", "semver", "semantic-versioning", "compatibility"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Libraries"
+]
+
+[project.urls]
+Homepage = "https://github.com/octue/json-schema-semver"
+Repository = "https://github.com/octue/json-schema-semver"
+Issues = "https://github.com/octue/json-schema-semver/issues"
 
 [build-system]
 requires = ["scikit-build-core", "pybind11"]
@@ -19,5 +34,21 @@ cmake.args = [
   "-DCMAKE_BUILD_TYPE:STRING=Release",
   "-DJSS_PYTHON=ON",
   "-DJSS_TESTS=OFF",
-  "-DBUILD_SHARED_LIBS:BOOL=OFF"
+  "-DBUILD_SHARED_LIBS:BOOL=OFF",
+  # Not needed, and it does not compile against the C library of the
+  # `manylinux_2_28` image that the published wheels are built in
+  "-DSOURCEMETA_CORE_LANG_PROCESS=OFF"
 ]
+
+# The wheels published to PyPI. The vendored dependencies need a compiler with
+# C++23 library support, which rules out images older than `manylinux_2_28`
+[tool.cibuildwheel]
+build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+skip = "*-musllinux_*"
+archs = ["native"]
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
+test-command = "python {project}/bindings/python/test.py"
+
+[tool.cibuildwheel.macos]
+environment = { MACOSX_DEPLOYMENT_TARGET = "14.0" }

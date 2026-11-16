@@ -55,7 +55,8 @@ auto bump(const SemVer change, const std::string_view base_version,
 
 /// Compare a proposed schema against an optional base schema and suggest the
 /// semantic version of the proposed schema. If there is no base schema, the
-/// suggestion is the initial version
+/// suggestion is the initial version. The traces of the suggestion point
+/// into the schemas, so the schemas must outlive it
 OCTUE_JSS_EXPORT
 auto suggest(const std::optional<sourcemeta::core::JSON> &base,
              const sourcemeta::core::JSON &proposed,

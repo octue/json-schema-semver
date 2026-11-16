@@ -86,10 +86,12 @@ Other rules:
   whatever the change is, even if the schemas are equal: `2.3.1-rc.1` becomes
   `2.3.1-rc.2`. A pre-release with no number in it is left as it is.
 - Equal schemas keep the base version, unless it is a pre-release. Schemas
-  are equal if they mathematically resolve to equivalence (noting that an
-  equivalent constraint could be expressed in different ways). Differences not
-  affecting equivalence, such as altered titles, descriptions, whitespacing, 
-  line endings or property ordering will result in least a `patch` change.
+  are `equal` only if they are the same JSON document. Whitespace, line
+  endings and the order of properties are ignored.
+- Any other difference is at least a `patch` change. That includes a changed
+  title or description, and a constraint rewritten in a different but
+  equivalent way (such as reordering the values of an `enum`), neither of which
+  changes what the schema accepts.
 
 
 ## Unsupported features

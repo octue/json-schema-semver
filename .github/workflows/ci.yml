@@ -31,6 +31,7 @@ jobs:
           -DCMAKE_BUILD_TYPE:STRING=Release
           -DJSS_TESTS:BOOL=ON
           -DJSS_PYTHON:BOOL=OFF
+          -DJSS_CLI:BOOL=ON
           -DBUILD_SHARED_LIBS:BOOL=OFF
           -DCMAKE_COMPILE_WARNING_AS_ERROR:BOOL=ON
       - run: cmake --build ./build --config Release --target clang_format_test

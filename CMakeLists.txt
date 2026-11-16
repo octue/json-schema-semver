@@ -3,16 +3,23 @@ project(json_schema_semver LANGUAGES CXX)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 option(JSS_TESTS "Build the JSON Schema SemVer tests" OFF)
 option(JSS_PYTHON "Build the JSON Schema SemVer Python bindings" OFF)
+option(JSS_CLI "Build the JSON Schema SemVer command-line tool" OFF)
+set(JSS_VERSION "0.0.0-dev" CACHE STRING
+  "The version reported by the JSON Schema SemVer command-line tool")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Core REQUIRED)
 
 if(PROJECT_IS_TOP_LEVEL)
   sourcemeta_target_clang_format(SOURCES
-    src/*.h src/*.cc test/*.h test/*.cc bindings/*.cc)
+    src/*.h src/*.cc cli/*.cc test/*.h test/*.cc bindings/*.cc)
 endif()
 
 add_subdirectory(src)
+
+if(JSS_CLI)
+  add_subdirectory(cli)
+endif()
 
 if(JSS_TESTS)
   enable_testing()

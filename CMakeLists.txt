@@ -30,6 +30,12 @@ if(JSS_PYTHON)
   add_subdirectory(vendor/pybind11)
   pybind11_add_module(json_schema_semver bindings/python/wrapper.cc)
   target_link_libraries(json_schema_semver PRIVATE octue_jss)
+  # The dependencies disable RTTI on GCC, and pass that on to whatever links
+  # to them, but pybind11 needs it. Options set on a source file come last
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set_source_files_properties(bindings/python/wrapper.cc
+      PROPERTIES COMPILE_OPTIONS -frtti)
+  endif()
   include(GNUInstallDirs)
   install(TARGETS json_schema_semver
     LIBRARY DESTINATION .

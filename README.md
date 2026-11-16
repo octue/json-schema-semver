@@ -180,7 +180,13 @@ The package is also published to GitHub Packages as
 
 ## Python bindings
 
-Wheels are attached to each release.
+```sh
+pip install json-schema-semver
+```
+
+There are wheels for Python 3.9 to 3.13 on Linux (x86_64 and arm64, glibc
+2.28 or later) and macOS 14 or later (Apple silicon). They are also attached
+to each release.
 
 ```python
 import json_schema_semver
@@ -249,8 +255,8 @@ git tag --annotate v1.2.3 --message v1.2.3
 
 This builds the command-line tool, the Python wheels and the npm package,
 attaches them all to a new GitHub release, publishes the npm package to GitHub
-Packages, and then checks that the GitHub Action works against the new
-release.
+Packages, checks that the GitHub Action works against the new release, and
+finally publishes the wheels to PyPI.
 
 The same artefacts are built and tested on every pull request into `main`,
 without publishing anything, so a release should not be the first time a

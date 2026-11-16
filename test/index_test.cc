@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include <octue/cruzer.h>
+#include <octue/jss.h>
 
-TEST(Cruzer_index, example_2020_12_1) {
+TEST(JSS_index, example_2020_12_1) {
   const auto schema{sourcemeta::core::parse_json(R"JSON({
     "$id": "https://www.example.com",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -22,9 +22,9 @@ TEST(Cruzer_index, example_2020_12_1) {
   frame.analyse(schema, sourcemeta::core::schema_walker,
                 sourcemeta::core::schema_resolver);
 
-  const auto index{octue::cruzer::index(frame, schema,
-                                        sourcemeta::core::schema_walker,
-                                        sourcemeta::core::schema_resolver)};
+  const auto index{octue::jss::index(frame, schema,
+                                     sourcemeta::core::schema_walker,
+                                     sourcemeta::core::schema_resolver)};
 
   EXPECT_EQ(index.size(), 4);
 
@@ -83,7 +83,7 @@ TEST(Cruzer_index, example_2020_12_1) {
             sourcemeta::core::SchemaBaseDialect::JSON_Schema_2020_12);
 }
 
-TEST(Cruzer_index, example_2020_12_2) {
+TEST(JSS_index, example_2020_12_2) {
   const auto schema{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "contentSchema": {
@@ -102,9 +102,9 @@ TEST(Cruzer_index, example_2020_12_2) {
   frame.analyse(schema, sourcemeta::core::schema_walker,
                 sourcemeta::core::schema_resolver);
 
-  const auto index{octue::cruzer::index(frame, schema,
-                                        sourcemeta::core::schema_walker,
-                                        sourcemeta::core::schema_resolver)};
+  const auto index{octue::jss::index(frame, schema,
+                                     sourcemeta::core::schema_walker,
+                                     sourcemeta::core::schema_resolver)};
 
   EXPECT_EQ(index.size(), 1);
 

@@ -1,5 +1,5 @@
-#ifndef OCTUE_CRUZER_COMPARATOR_H_
-#define OCTUE_CRUZER_COMPARATOR_H_
+#ifndef OCTUE_JSS_COMPARATOR_H_
+#define OCTUE_JSS_COMPARATOR_H_
 
 #include <sourcemeta/core/jsonpointer.h>
 
@@ -8,7 +8,7 @@
 
 #include "helpers.h"
 
-namespace octue::cruzer {
+namespace octue::jss {
 
 static auto compare(
     // Left current subschema
@@ -22,7 +22,7 @@ static auto compare(
     // Left schema location
     const sourcemeta::core::WeakPointer &left_schema_location,
     // Left instance location
-    const octue::cruzer::PointerTemplate &,
+    const octue::jss::PointerTemplate &,
 
     // Right current subschema
     const sourcemeta::core::JSON &right_subschema,
@@ -35,7 +35,7 @@ static auto compare(
     // Right schema location
     const sourcemeta::core::WeakPointer &right_schema_location,
     // Right instance location
-    const octue::cruzer::PointerTemplate &) -> Trace {
+    const octue::jss::PointerTemplate &) -> Trace {
 
 #define MAKE_RESULT(expected_compatibility)                                    \
   Trace{Compatibility::expected_compatibility, left_schema_location,           \
@@ -636,8 +636,8 @@ static auto compare(
 #undef BIDIRECTIONAL_TYPED_2020_12
 #undef BIDIRECTIONAL_TYPED_ANY_2020_12
 
-} // namespace octue::cruzer
+} // namespace octue::jss
 
-} // namespace octue::cruzer
+} // namespace octue::jss
 
 #endif

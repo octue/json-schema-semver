@@ -1,7 +1,7 @@
 import unittest
-import pycruzer
+import json_schema_semver
 
-class TestPycruzer(unittest.TestCase):
+class TestJsonSchemaSemver(unittest.TestCase):
     def test_const_to_enum(self):
         from_schema = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -20,7 +20,7 @@ class TestPycruzer(unittest.TestCase):
           ]
         }
 
-        result = pycruzer.version(from_schema, to_schema)
+        result = json_schema_semver.version(from_schema, to_schema)
         self.assertDictEqual(result, expected)
 
     def test_equal(self):
@@ -39,7 +39,7 @@ class TestPycruzer(unittest.TestCase):
           "traces": []
         }
 
-        result = pycruzer.version(from_schema, to_schema)
+        result = json_schema_semver.version(from_schema, to_schema)
         self.assertDictEqual(result, expected)
 
     def test_base_dialect_2020_12(self):
@@ -48,7 +48,7 @@ class TestPycruzer(unittest.TestCase):
           "const": "foo"
         }
 
-        dialect = pycruzer.get_base_dialect(schema)
+        dialect = json_schema_semver.get_base_dialect(schema)
         self.assertEqual(dialect, "https://json-schema.org/draft/2020-12/schema")
 
     def test_base_dialect_draft7(self):
@@ -57,7 +57,7 @@ class TestPycruzer(unittest.TestCase):
           "const": "foo"
         }
 
-        dialect = pycruzer.get_base_dialect(schema)
+        dialect = json_schema_semver.get_base_dialect(schema)
         self.assertEqual(dialect, "http://json-schema.org/draft-07/schema#")
 
     def test_base_dialect_unknown(self):
@@ -65,7 +65,7 @@ class TestPycruzer(unittest.TestCase):
           "const": "foo"
         }
 
-        dialect = pycruzer.get_base_dialect(schema)
+        dialect = json_schema_semver.get_base_dialect(schema)
         self.assertEqual(dialect, None)
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 [project]
-name = "pycruzer"
+name = "json-schema-semver"
 version = "0.1.6"
 description = ""
 authors = [
@@ -16,7 +16,7 @@ build-backend = "scikit_build_core.build"
 [tool.scikit-build]
 cmake.args = [
   "-DCMAKE_BUILD_TYPE:STRING=Release",
-  "-DCRUZER_PYTHON=ON",
-  "-DCRUZER_TESTS=OFF",
+  "-DJSS_PYTHON=ON",
+  "-DJSS_TESTS=OFF",
   "-DBUILD_SHARED_LIBS:BOOL=OFF"
 ]

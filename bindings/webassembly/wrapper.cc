@@ -1,4 +1,4 @@
-#include <octue/cruzer.h>
+#include <octue/jss.h>
 
 // See
 // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html
@@ -9,21 +9,21 @@ static auto version(const std::string &from, const std::string &to)
     -> emscripten::val {
   const auto from_json{sourcemeta::core::parse_json(from)};
   const auto to_json{sourcemeta::core::parse_json(to)};
-  const auto result{octue::cruzer::version(from_json, to_json)};
+  const auto result{octue::jss::version(from_json, to_json)};
   emscripten::val result_json = emscripten::val::object();
 
   if (result.version.has_value()) {
     switch (result.version.value()) {
-      case octue::cruzer::SemVer::Major:
+      case octue::jss::SemVer::Major:
         result_json.set("version", "major");
         break;
-      case octue::cruzer::SemVer::Minor:
+      case octue::jss::SemVer::Minor:
         result_json.set("version", "minor");
         break;
-      case octue::cruzer::SemVer::Patch:
+      case octue::jss::SemVer::Patch:
         result_json.set("version", "patch");
         break;
-      case octue::cruzer::SemVer::Equal:
+      case octue::jss::SemVer::Equal:
         result_json.set("version", "equal");
         break;
     }
@@ -36,16 +36,16 @@ static auto version(const std::string &from, const std::string &to)
     emscripten::val trace_json = emscripten::val::object();
 
     switch (trace.compatibility) {
-      case octue::cruzer::Compatibility::Compatible:
+      case octue::jss::Compatibility::Compatible:
         trace_json.set("compatibility", "compatible");
         break;
-      case octue::cruzer::Compatibility::Incompatible:
+      case octue::jss::Compatibility::Incompatible:
         trace_json.set("compatibility", "incompatible");
         break;
-      case octue::cruzer::Compatibility::Skip:
+      case octue::jss::Compatibility::Skip:
         trace_json.set("compatibility", "skip");
         break;
-      case octue::cruzer::Compatibility::Unknown:
+      case octue::jss::Compatibility::Unknown:
         trace_json.set("compatibility", "unknown");
         break;
     }
@@ -81,7 +81,7 @@ static auto get_base_dialect(const std::string &schema) -> emscripten::val {
   }
 }
 
-EMSCRIPTEN_BINDINGS(cruzer) {
+EMSCRIPTEN_BINDINGS(jss) {
   emscripten::function("version", &version);
   emscripten::function("getBaseDialect", &get_base_dialect);
 }

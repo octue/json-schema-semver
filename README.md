@@ -1,4 +1,4 @@
-# version-cruzer
+# json-schema-semver
 
 Building semantic versioning into Strands
 

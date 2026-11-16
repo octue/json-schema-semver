@@ -29,8 +29,8 @@ jobs:
       - run: >
           cmake -S . -B ./build
           -DCMAKE_BUILD_TYPE:STRING=Release
-          -DCRUZER_TESTS:BOOL=ON
-          -DCRUZER_PYTHON:BOOL=OFF
+          -DJSS_TESTS:BOOL=ON
+          -DJSS_PYTHON:BOOL=OFF
           -DBUILD_SHARED_LIBS:BOOL=OFF
           -DCMAKE_COMPILE_WARNING_AS_ERROR:BOOL=ON
       - run: cmake --build ./build --config Release --target clang_format_test
@@ -80,4 +80,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build --tag pycruzer . --file bindings/python/Dockerfile --progress plain
+      - run: docker build --tag json-schema-semver . --file bindings/python/Dockerfile --progress plain

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import { strict as assert } from 'node:assert';
-import { version, getBaseDialect } from './cruzer.js';
+import { version, getBaseDialect } from './json-schema-semver.js';
 
 test('const to enum', async (t) => {
   const from = {

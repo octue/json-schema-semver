@@ -1,14 +1,14 @@
-#ifndef OCTUE_CRUZER_H_
-#define OCTUE_CRUZER_H_
+#ifndef OCTUE_JSS_H_
+#define OCTUE_JSS_H_
 
 #include <sourcemeta/core/json.h>
 #include <sourcemeta/core/jsonpointer.h>
 #include <sourcemeta/core/jsonschema.h>
 
-#include <octue/cruzer_pointer_template.h>
+#include <octue/jss_pointer_template.h>
 
-#ifndef OCTUE_CRUZER_EXPORT
-#include <octue/cruzer_export.h>
+#ifndef OCTUE_JSS_EXPORT
+#include <octue/jss_export.h>
 #endif
 
 #include <cstdint>       // std::uint8_t
@@ -19,7 +19,7 @@
 #include <unordered_map> // std::unordered_map
 #include <vector>        // std::vector
 
-namespace octue::cruzer {
+namespace octue::jss {
 enum class Compatibility : std::uint8_t {
   Compatible,
   Incompatible,
@@ -36,7 +36,7 @@ struct Trace {
 };
 
 struct SchemaLocation {
-  octue::cruzer::PointerTemplate instance_location;
+  octue::jss::PointerTemplate instance_location;
   std::optional<sourcemeta::core::WeakPointer> parent;
   sourcemeta::core::WeakPointer pointer;
   std::reference_wrapper<const sourcemeta::core::JSON> subschema;
@@ -57,7 +57,7 @@ struct Result {
   std::vector<Trace> traces;
 };
 
-OCTUE_CRUZER_EXPORT
+OCTUE_JSS_EXPORT
 auto version(
     const sourcemeta::core::JSON &from, const sourcemeta::core::JSON &to,
     const std::optional<sourcemeta::core::JSON::String> &default_dialect_from =
@@ -78,7 +78,7 @@ auto version(
         std::nullopt) -> Result;
 
 // A convenience helper for end users to avoid framing themselves
-OCTUE_CRUZER_EXPORT
+OCTUE_JSS_EXPORT
 auto is_compatible_with(
     const sourcemeta::core::JSON &left, const sourcemeta::core::JSON &right,
     const std::optional<sourcemeta::core::JSON::String> &default_dialect_left =
@@ -98,11 +98,11 @@ auto is_compatible_with(
     const std::optional<sourcemeta::core::JSON::String> &default_id_right =
         std::nullopt) -> std::vector<Trace>;
 
-OCTUE_CRUZER_EXPORT
+OCTUE_JSS_EXPORT
 auto is_compatible_with(const SchemaIndex &left, const SchemaIndex &right)
     -> std::vector<Trace>;
 
-OCTUE_CRUZER_EXPORT
+OCTUE_JSS_EXPORT
 auto instance_locations(const sourcemeta::core::SchemaFrame &frame,
                         const sourcemeta::core::JSON &schema,
                         const sourcemeta::core::SchemaWalker &walker =
@@ -112,9 +112,9 @@ auto instance_locations(const sourcemeta::core::SchemaFrame &frame,
                         const std::optional<sourcemeta::core::JSON::String>
                             &default_dialect = std::nullopt)
     -> std::map<sourcemeta::core::WeakPointer,
-                std::vector<octue::cruzer::PointerTemplate>>;
+                std::vector<octue::jss::PointerTemplate>>;
 
-OCTUE_CRUZER_EXPORT
+OCTUE_JSS_EXPORT
 auto index(const sourcemeta::core::SchemaFrame &frame,
            const sourcemeta::core::JSON &schema,
            const sourcemeta::core::SchemaWalker &walker,
@@ -122,6 +122,6 @@ auto index(const sourcemeta::core::SchemaFrame &frame,
            const std::optional<sourcemeta::core::JSON::String>
                &default_dialect = std::nullopt) -> SchemaIndex;
 
-} // namespace octue::cruzer
+} // namespace octue::jss
 
 #endif

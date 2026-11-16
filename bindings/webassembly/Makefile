@@ -35,10 +35,10 @@ CXXFLAGS ?= -O3 -std=c++23 -flto \
 	-I$(CMAKE_BUILD)/vendor/core/src/lang/io/include
 
 # Static libraries built by the CMake configure step below, in link order
-# (dependents first). `octue_cruzer` depends on the vendor libraries, and
+# (dependents first). `octue_jss` depends on the vendor libraries, and
 # those in turn depend on PCRE2 and each other.
 STATIC_LIBS := \
-	$(CMAKE_BUILD)/src/liboctue_cruzer.a \
+	$(CMAKE_BUILD)/src/liboctue_jss.a \
 	$(CMAKE_BUILD)/vendor/core/src/core/jsonschema/libsourcemeta_core_jsonschema.a \
 	$(CMAKE_BUILD)/vendor/core/src/core/jsonpointer/libsourcemeta_core_jsonpointer.a \
 	$(CMAKE_BUILD)/vendor/core/src/core/regex/libsourcemeta_core_regex.a \
@@ -51,7 +51,7 @@ STATIC_LIBS := \
 	$(CMAKE_BUILD)/vendor/core/src/lang/io/libsourcemeta_core_io.a
 
 # See https://emscripten.org/docs/tools_reference/settings_reference.html
-LDFLAGS ?= -lembind -s EXPORT_NAME=cruzer -DNDEBUG \
+LDFLAGS ?= -lembind -s EXPORT_NAME=jss -DNDEBUG \
 					 -s EVAL_CTORS=2 -s WASM=1 -s NO_EXIT_RUNTIME=1 -s ASSERTIONS=0 \
 					 -s MODULARIZE=1 -s EXPORT_ES6=1 -s ENVIRONMENT=node
 
@@ -69,8 +69,8 @@ dist: ; $(MKDIR) $@
 $(CMAKE_BUILD)/CMakeCache.txt: | $(BUILD)
 	$(EMCMAKE) $(CMAKE) -S $(ROOT) -B $(CMAKE_BUILD) \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DCRUZER_TESTS=OFF \
-		-DCRUZER_PYTHON=OFF \
+		-DJSS_TESTS=OFF \
+		-DJSS_PYTHON=OFF \
 		-DBUILD_SHARED_LIBS=OFF \
 		-DCMAKE_COMPILE_WARNING_AS_ERROR=OFF \
 		-DSOURCEMETA_CORE_LANG_PARALLEL=OFF \
@@ -89,7 +89,7 @@ $(CMAKE_BUILD)/CMakeCache.txt: | $(BUILD)
 
 .PHONY: $(STATIC_LIBS)
 $(STATIC_LIBS): $(CMAKE_BUILD)/CMakeCache.txt
-	$(CMAKE) --build $(CMAKE_BUILD) --target octue_cruzer --parallel 4
+	$(CMAKE) --build $(CMAKE_BUILD) --target octue_jss --parallel 4
 
 dist/wrapper.js: wrapper.cc $(STATIC_LIBS) | dist
 	$(EMCC) $(CXXFLAGS) $(LDFLAGS) -o $@ wrapper.cc $(STATIC_LIBS)

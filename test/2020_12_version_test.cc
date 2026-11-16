@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <octue/cruzer.h>
+#include <octue/jss.h>
 
 #include "macros.h"
 
-TEST(Cruzer_version_2020_12, add_id) {
+TEST(JSS_version_2020_12, add_id) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema"
   })JSON")};
@@ -16,7 +16,7 @@ TEST(Cruzer_version_2020_12, add_id) {
   EXPECT_VERSION(result, from, to, Patch, 0);
 }
 
-TEST(Cruzer_version_2020_12, const_to_enum_superset) {
+TEST(JSS_version_2020_12, const_to_enum_superset) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "const": "foo"
@@ -31,7 +31,7 @@ TEST(Cruzer_version_2020_12, const_to_enum_superset) {
   EXPECT_TRACE(result, 0, Incompatible, "/const", "/enum");
 }
 
-TEST(Cruzer_version_2020_12, schema_to_const_match) {
+TEST(JSS_version_2020_12, schema_to_const_match) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "string",
@@ -47,7 +47,7 @@ TEST(Cruzer_version_2020_12, schema_to_const_match) {
   EXPECT_TRACE(result, 0, Unknown, "/type", "/const");
 }
 
-TEST(Cruzer_version_2020_12, add_default_minimum) {
+TEST(JSS_version_2020_12, add_default_minimum) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "number"
@@ -63,7 +63,7 @@ TEST(Cruzer_version_2020_12, add_default_minimum) {
   EXPECT_TRACE(result, 0, Incompatible, "/type", "/minimum");
 }
 
-TEST(Cruzer_version_2020_12, add_type) {
+TEST(JSS_version_2020_12, add_type) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "minimum": 2
@@ -79,7 +79,7 @@ TEST(Cruzer_version_2020_12, add_type) {
   EXPECT_TRACE(result, 0, Incompatible, "/minimum", "/type");
 }
 
-TEST(Cruzer_version_2020_12, schema_to_const) {
+TEST(JSS_version_2020_12, schema_to_const) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "minimum": 2
@@ -94,7 +94,7 @@ TEST(Cruzer_version_2020_12, schema_to_const) {
   EXPECT_TRACE(result, 0, Unknown, "/minimum", "/const");
 }
 
-TEST(Cruzer_version_2020_12, properties_to_another_type) {
+TEST(JSS_version_2020_12, properties_to_another_type) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -113,7 +113,7 @@ TEST(Cruzer_version_2020_12, properties_to_another_type) {
   EXPECT_TRACE(result, 0, Incompatible, "/properties", "/type");
 }
 
-TEST(Cruzer_version_2020_12, properties_add_new_property) {
+TEST(JSS_version_2020_12, properties_add_new_property) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -139,7 +139,7 @@ TEST(Cruzer_version_2020_12, properties_add_new_property) {
   EXPECT_TRACE(result, 0, Incompatible, "/properties", "/properties");
 }
 
-TEST(Cruzer_version_2020_12, properties_remove_property) {
+TEST(JSS_version_2020_12, properties_remove_property) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -165,7 +165,7 @@ TEST(Cruzer_version_2020_12, properties_remove_property) {
   EXPECT_TRACE(result, 0, Incompatible, "/properties", "/properties");
 }
 
-TEST(Cruzer_version_2020_12, properties_remove_relax_assertion) {
+TEST(JSS_version_2020_12, properties_remove_relax_assertion) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -190,7 +190,7 @@ TEST(Cruzer_version_2020_12, properties_remove_relax_assertion) {
                "/properties/foo/type");
 }
 
-TEST(Cruzer_version_2020_12, properties_change_type) {
+TEST(JSS_version_2020_12, properties_change_type) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -214,7 +214,7 @@ TEST(Cruzer_version_2020_12, properties_change_type) {
                "/properties/foo/type");
 }
 
-TEST(Cruzer_version_2020_12, standalone_defs) {
+TEST(JSS_version_2020_12, standalone_defs) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$defs": {
@@ -236,7 +236,7 @@ TEST(Cruzer_version_2020_12, standalone_defs) {
   EXPECT_VERSION(result, from, to, Patch, 0);
 }
 
-TEST(Cruzer_version_2020_12, properties_change_type_through_ref) {
+TEST(JSS_version_2020_12, properties_change_type_through_ref) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -269,7 +269,7 @@ TEST(Cruzer_version_2020_12, properties_change_type_through_ref) {
   EXPECT_TRACE(result, 0, Incompatible, "/$defs/foo/type", "/$defs/foo/type");
 }
 
-TEST(Cruzer_version_2020_12, patternproperties_add_new_regex) {
+TEST(JSS_version_2020_12, patternproperties_add_new_regex) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "patternProperties": {
@@ -290,7 +290,7 @@ TEST(Cruzer_version_2020_12, patternproperties_add_new_regex) {
                "/patternProperties");
 }
 
-TEST(Cruzer_version_2020_12, patternproperties_remove_regex) {
+TEST(JSS_version_2020_12, patternproperties_remove_regex) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "patternProperties": {
@@ -311,7 +311,7 @@ TEST(Cruzer_version_2020_12, patternproperties_remove_regex) {
                "/patternProperties");
 }
 
-TEST(Cruzer_version_2020_12, properties_add_matching_patternproperties) {
+TEST(JSS_version_2020_12, properties_add_matching_patternproperties) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -333,7 +333,7 @@ TEST(Cruzer_version_2020_12, properties_add_matching_patternproperties) {
   EXPECT_TRACE(result, 0, Unknown, "/properties", "/patternProperties");
 }
 
-TEST(Cruzer_version_2020_12, additionalproperties_open_to_close) {
+TEST(JSS_version_2020_12, additionalproperties_open_to_close) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -353,7 +353,7 @@ TEST(Cruzer_version_2020_12, additionalproperties_open_to_close) {
   EXPECT_TRACE(result, 0, Incompatible, std::nullopt, "/additionalProperties");
 }
 
-TEST(Cruzer_version_2020_12, additionalproperties_open_to_explicit_open) {
+TEST(JSS_version_2020_12, additionalproperties_open_to_explicit_open) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -372,7 +372,7 @@ TEST(Cruzer_version_2020_12, additionalproperties_open_to_explicit_open) {
   EXPECT_VERSION(result, from, to, Patch, 0);
 }
 
-TEST(Cruzer_version_2020_12, additionalproperties_with_patternproperties) {
+TEST(JSS_version_2020_12, additionalproperties_with_patternproperties) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "patternProperties": {
@@ -392,7 +392,7 @@ TEST(Cruzer_version_2020_12, additionalproperties_with_patternproperties) {
   EXPECT_TRACE(result, 0, Incompatible, std::nullopt, "/additionalProperties");
 }
 
-TEST(Cruzer_version_2020_12, additionalproperties_open_to_close_standalone) {
+TEST(JSS_version_2020_12, additionalproperties_open_to_close_standalone) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true
@@ -408,7 +408,7 @@ TEST(Cruzer_version_2020_12, additionalproperties_open_to_close_standalone) {
                "/additionalProperties");
 }
 
-TEST(Cruzer_version_2020_12, additionalproperties_open_to_schema) {
+TEST(JSS_version_2020_12, additionalproperties_open_to_schema) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true
@@ -426,7 +426,7 @@ TEST(Cruzer_version_2020_12, additionalproperties_open_to_schema) {
                "/additionalProperties/type");
 }
 
-TEST(Cruzer_version_2020_12, additionalproperties_schema_to_schema) {
+TEST(JSS_version_2020_12, additionalproperties_schema_to_schema) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": {
@@ -446,7 +446,7 @@ TEST(Cruzer_version_2020_12, additionalproperties_schema_to_schema) {
                "/additionalProperties/type");
 }
 
-TEST(Cruzer_version_2020_12, properties_to_additionalproperties) {
+TEST(JSS_version_2020_12, properties_to_additionalproperties) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "properties": {
@@ -465,7 +465,7 @@ TEST(Cruzer_version_2020_12, properties_to_additionalproperties) {
   EXPECT_TRACE(result, 0, Incompatible, std::nullopt, "/additionalProperties");
 }
 
-TEST(Cruzer_version_2020_12, propertynames_incompatible) {
+TEST(JSS_version_2020_12, propertynames_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "propertyNames": {
@@ -485,7 +485,7 @@ TEST(Cruzer_version_2020_12, propertynames_incompatible) {
                "/propertyNames/type");
 }
 
-TEST(Cruzer_version_2020_12, propertynames_add) {
+TEST(JSS_version_2020_12, propertynames_add) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema"
   })JSON")};
@@ -501,7 +501,7 @@ TEST(Cruzer_version_2020_12, propertynames_add) {
   EXPECT_TRACE(result, 0, Incompatible, std::nullopt, "/propertyNames");
 }
 
-TEST(Cruzer_version_2020_12, contains_add) {
+TEST(JSS_version_2020_12, contains_add) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema"
   })JSON")};
@@ -517,7 +517,7 @@ TEST(Cruzer_version_2020_12, contains_add) {
   EXPECT_TRACE(result, 0, Incompatible, std::nullopt, "/contains");
 }
 
-TEST(Cruzer_version_2020_12, contains_incompatible) {
+TEST(JSS_version_2020_12, contains_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "contains": {
@@ -536,7 +536,7 @@ TEST(Cruzer_version_2020_12, contains_incompatible) {
   EXPECT_TRACE(result, 0, Incompatible, "/contains/type", "/contains/type");
 }
 
-TEST(Cruzer_version_2020_12, if_then_add_else) {
+TEST(JSS_version_2020_12, if_then_add_else) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "if": { "type": "string" },
@@ -554,7 +554,7 @@ TEST(Cruzer_version_2020_12, if_then_add_else) {
   EXPECT_TRACE(result, 0, Incompatible, std::nullopt, "/else");
 }
 
-TEST(Cruzer_version_2020_12, if_then_else_incompatible) {
+TEST(JSS_version_2020_12, if_then_else_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "if": { "type": "string" },
@@ -573,7 +573,7 @@ TEST(Cruzer_version_2020_12, if_then_else_incompatible) {
   EXPECT_TRACE(result, 0, Incompatible, "/else/type", "/else/type");
 }
 
-TEST(Cruzer_version_2020_12, add_standalone_then) {
+TEST(JSS_version_2020_12, add_standalone_then) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema"
   })JSON")};
@@ -586,7 +586,7 @@ TEST(Cruzer_version_2020_12, add_standalone_then) {
   EXPECT_VERSION(result, from, to, Patch, 0);
 }
 
-TEST(Cruzer_version_2020_12, if_standalone) {
+TEST(JSS_version_2020_12, if_standalone) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "if": { "type": "string" }
@@ -601,7 +601,7 @@ TEST(Cruzer_version_2020_12, if_standalone) {
   EXPECT_TRACE(result, 0, Incompatible, "/if/type", "/if/minLength");
 }
 
-TEST(Cruzer_version_2020_12, not_incompatible) {
+TEST(JSS_version_2020_12, not_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "not": { "type": "number" }
@@ -616,7 +616,7 @@ TEST(Cruzer_version_2020_12, not_incompatible) {
   EXPECT_TRACE(result, 0, Incompatible, "/not/type", "/not/type");
 }
 
-TEST(Cruzer_version_2020_12, prefixitems_add) {
+TEST(JSS_version_2020_12, prefixitems_add) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "prefixItems": [
@@ -638,7 +638,7 @@ TEST(Cruzer_version_2020_12, prefixitems_add) {
   EXPECT_TRACE(result, 0, Incompatible, std::nullopt, "/prefixItems/2");
 }
 
-TEST(Cruzer_version_2020_12, prefixitems_remove) {
+TEST(JSS_version_2020_12, prefixitems_remove) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "prefixItems": [
@@ -661,7 +661,7 @@ TEST(Cruzer_version_2020_12, prefixitems_remove) {
   EXPECT_TRACE(result, 0, Incompatible, "/prefixItems/2", std::nullopt);
 }
 
-TEST(Cruzer_version_2020_12, items_incompatible) {
+TEST(JSS_version_2020_12, items_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "items": {
@@ -680,7 +680,7 @@ TEST(Cruzer_version_2020_12, items_incompatible) {
   EXPECT_TRACE(result, 0, Incompatible, "/items/type", "/items/type");
 }
 
-TEST(Cruzer_version_2020_12, prefixitems_add_items) {
+TEST(JSS_version_2020_12, prefixitems_add_items) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "prefixItems": [
@@ -704,7 +704,7 @@ TEST(Cruzer_version_2020_12, prefixitems_add_items) {
   EXPECT_TRACE(result, 0, Incompatible, std::nullopt, "/items");
 }
 
-TEST(Cruzer_version_2020_12, dependentschemas_incompatible) {
+TEST(JSS_version_2020_12, dependentschemas_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "dependentSchemas": {
@@ -726,7 +726,7 @@ TEST(Cruzer_version_2020_12, dependentschemas_incompatible) {
                "/dependentSchemas/bar/type");
 }
 
-TEST(Cruzer_version_2020_12, allof_wrap) {
+TEST(JSS_version_2020_12, allof_wrap) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "string"
@@ -742,7 +742,7 @@ TEST(Cruzer_version_2020_12, allof_wrap) {
   EXPECT_VERSION(result, from, to, Patch, 0);
 }
 
-TEST(Cruzer_version_2020_12, allof_add) {
+TEST(JSS_version_2020_12, allof_add) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "allOf": [
@@ -762,7 +762,7 @@ TEST(Cruzer_version_2020_12, allof_add) {
   EXPECT_TRACE(result, 0, Incompatible, "/allOf/0/type", "/allOf/1/minLength");
 }
 
-TEST(Cruzer_version_2020_12, allof_remove) {
+TEST(JSS_version_2020_12, allof_remove) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "allOf": [
@@ -783,7 +783,7 @@ TEST(Cruzer_version_2020_12, allof_remove) {
   EXPECT_TRACE(result, 0, Incompatible, "/allOf/1/minLength", "/allOf/0/type");
 }
 
-TEST(Cruzer_version_2020_12, anyof_incompatible) {
+TEST(JSS_version_2020_12, anyof_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "anyOf": [
@@ -804,7 +804,7 @@ TEST(Cruzer_version_2020_12, anyof_incompatible) {
   EXPECT_TRACE(result, 0, Incompatible, "/anyOf/1/type", "/anyOf/1/type");
 }
 
-TEST(Cruzer_version_2020_12, oneof_incompatible) {
+TEST(JSS_version_2020_12, oneof_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "oneOf": [
@@ -825,7 +825,7 @@ TEST(Cruzer_version_2020_12, oneof_incompatible) {
   EXPECT_TRACE(result, 0, Incompatible, "/oneOf/1/type", "/oneOf/1/type");
 }
 
-TEST(Cruzer_version_2020_12, unevaluatedproperties_incompatible) {
+TEST(JSS_version_2020_12, unevaluatedproperties_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "allOf": [
@@ -863,7 +863,7 @@ TEST(Cruzer_version_2020_12, unevaluatedproperties_incompatible) {
                "/unevaluatedProperties/type");
 }
 
-TEST(Cruzer_version_2020_12, unevaluateditems_incompatible) {
+TEST(JSS_version_2020_12, unevaluateditems_incompatible) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "allOf": [
@@ -897,7 +897,7 @@ TEST(Cruzer_version_2020_12, unevaluateditems_incompatible) {
                "/unevaluatedItems/type");
 }
 
-TEST(Cruzer_version_2020_12, equal) {
+TEST(JSS_version_2020_12, equal) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "string"
@@ -911,7 +911,7 @@ TEST(Cruzer_version_2020_12, equal) {
   EXPECT_VERSION(result, from, to, Equal, 0);
 }
 
-TEST(Cruzer_version_2020_12, number_add_description) {
+TEST(JSS_version_2020_12, number_add_description) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "number",
@@ -928,7 +928,7 @@ TEST(Cruzer_version_2020_12, number_add_description) {
   EXPECT_VERSION(result, from, to, Patch, 0);
 }
 
-TEST(Cruzer_version_2020_12, number_property_add_description) {
+TEST(JSS_version_2020_12, number_property_add_description) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$id": "https://example.com/geographical-location.schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",

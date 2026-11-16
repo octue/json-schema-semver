@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
-project(cruzer LANGUAGES CXX)
+project(json_schema_semver LANGUAGES CXX)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-option(CRUZER_TESTS "Build the Cruzer tests" OFF)
-option(CRUZER_PYTHON "Build the Cruzer Python bindings" OFF)
+option(JSS_TESTS "Build the JSON Schema SemVer tests" OFF)
+option(JSS_PYTHON "Build the JSON Schema SemVer Python bindings" OFF)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Core REQUIRED)
@@ -14,17 +14,17 @@ endif()
 
 add_subdirectory(src)
 
-if(CRUZER_TESTS)
+if(JSS_TESTS)
   enable_testing()
   add_subdirectory(test)
 endif()
 
-if(CRUZER_PYTHON)
+if(JSS_PYTHON)
   add_subdirectory(vendor/pybind11)
-  pybind11_add_module(pycruzer bindings/python/wrapper.cc)
-  target_link_libraries(pycruzer PRIVATE octue_cruzer)
+  pybind11_add_module(json_schema_semver bindings/python/wrapper.cc)
+  target_link_libraries(json_schema_semver PRIVATE octue_jss)
   include(GNUInstallDirs)
-  install(TARGETS pycruzer
+  install(TARGETS json_schema_semver
     LIBRARY DESTINATION .
-    COMPONENT pycruzer)
+    COMPONENT json_schema_semver)
 endif()

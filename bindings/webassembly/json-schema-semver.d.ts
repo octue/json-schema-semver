@@ -1,4 +1,4 @@
-declare module "@octue/version-cruzer" {
+declare module "@octue/json-schema-semver" {
   export type VersionChangeType = "major" | "minor" | "patch" | "equal" | null;
 
   export type CompatibilityType =

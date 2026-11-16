@@ -3,6 +3,10 @@ name: ci
 on:
   push:
 
+# Nothing here publishes anything, so no job needs to write
+permissions:
+  contents: read
+
 jobs:
   test:
     if: "!contains(github.event.head_commit.message, 'skipci')"

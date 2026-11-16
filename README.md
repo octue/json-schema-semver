@@ -250,6 +250,10 @@ attaches them all to a new GitHub release, publishes the npm package to GitHub
 Packages, and then checks that the GitHub Action works against the new
 release.
 
+The same artefacts are built and tested on every pull request into `main`,
+without publishing anything, so a release should not be the first time a
+build problem shows up.
+
 ## License
 
 Copyright (c) Octue Ltd. Licensed under the [GNU Affero General Public License v3](LICENSE). Third-party dependency attributions are listed in the [NOTICE](NOTICE) file.

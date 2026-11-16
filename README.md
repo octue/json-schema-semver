@@ -24,7 +24,7 @@ This tool was developed as part of the [``strands``](https://strands.octue.com) 
     path: schema.json
     base_path: previous/schema.json
     base_version: 0.3.1
-    breaking: minor
+    stage: development
 - run: echo "${{ steps.version.outputs.version }} (${{ steps.version.outputs.change }})"
 ```
 
@@ -39,7 +39,7 @@ GitHub-hosted runners already have.
 | `path` | Yes | | The path to the proposed JSON schema, relative to the repository root. |
 | `base_path` | No | | The path to the JSON schema to compare against. If not provided, the suggestion is the initial version. |
 | `base_version` | No | | The semantic version of the base schema. If not provided, only the type of change is reported. |
-| `breaking` | No | `major` | Which part of the version a breaking change bumps. See [Breaking levels](#breaking-levels). |
+| `stage` | No | `stable` | The stage of the project: `stable`, `development` or `prototype`. It sets which part of the version a breaking change bumps. See [Stages](#stages). |
 | `initial_version` | No | `0.0.1` | The version to suggest when there is no base schema. |
 | `cli_version` | No | The version of the action | The release of the command-line tool to download, such as `v0.2.0`. |
 | `cli_path` | No | | The path to an existing `json-schema-semver` binary to use instead of downloading one. |
@@ -64,24 +64,24 @@ separate directory first:
     path: previous
 ```
 
-## Breaking levels
+## Stages
 
-The `breaking` level sets which part of the version a breaking change bumps,
-so that a project can move from prototyping to a stable release by changing
-one setting.
+The `stage` of a project sets which part of the version a breaking change
+bumps, so that a project can move from prototyping to a stable release by
+changing one setting.
 
-| `breaking` | For | Breaking change | Additive change | Other change | Base version must be |
+| `stage` | Versions | Breaking change | Additive change | Other change | Base version must be |
 |---|---|---|---|---|---|
-| `major` (default) | Stable projects | X+1.0.0 | X.Y+1.0 | X.Y.Z+1 | Anything |
-| `minor` | 0.x development | 0.Y+1.0 | 0.Y+1.0 | 0.Y.Z+1 | Below 1.0.0 |
-| `patch` | 0.0.x prototyping | 0.0.Z+1 | 0.0.Z+1 | 0.0.Z+1 | Below 0.1.0 |
+| `stable` (default) | X.Y.Z | X+1.0.0 | X.Y+1.0 | X.Y.Z+1 | Anything |
+| `development` | 0.Y.Z | 0.Y+1.0 | 0.Y+1.0 | 0.Y.Z+1 | Below 1.0.0 |
+| `prototype` | 0.0.Z | 0.0.Z+1 | 0.0.Z+1 | 0.0.Z+1 | Below 0.1.0 |
 
 Other rules:
 
-- With the default `major` level, a breaking change to a 0.x version suggests
-  `1.0.0`. Use `minor` or `patch` to stay below 1.0.0.
-- A base version that is too high for the level is an error. For example,
-  `patch` with a base version of `0.1.3`.
+- With the default `stable` stage, a breaking change to a 0.x version suggests
+  `1.0.0`. Use `development` or `prototype` to stay below 1.0.0.
+- A base version that is too high for the stage is an error. For example,
+  `prototype` with a base version of `0.1.3`.
 - If the base version is a pre-release, the pre-release number is bumped
   whatever the change is, even if the schemas are equal: `2.3.1-rc.1` becomes
   `2.3.1-rc.2`. A pre-release with no number in it is left as it is.
@@ -118,14 +118,14 @@ The `SHA256SUMS` file of each release has the checksum of every file.
 
 ```
 json-schema-semver suggest <proposed.json> [--base <base.json>] [--base-version <version>]
-                           [--breaking major|minor|patch] [--initial-version <version>]
+                           [--stage stable|development|prototype] [--initial-version <version>]
 json-schema-semver compare <from.json> <to.json>
 ```
 
 For example:
 
 ```sh
-$ json-schema-semver suggest new.json --base old.json --base-version 0.3.1 --breaking minor
+$ json-schema-semver suggest new.json --base old.json --base-version 0.3.1 --stage development
 {
   "version": "0.4.0",
   "change": "minor",
@@ -162,7 +162,7 @@ npm install https://github.com/octue/json-schema-semver/releases/download/v0.2.0
 ```js
 import { suggest, version } from '@octue/json-schema-semver';
 
-await suggest(base, proposed, { baseVersion: '0.3.1', breaking: 'minor' });
+await suggest(base, proposed, { baseVersion: '0.3.1', stage: 'development' });
 // { version: '0.4.0', change: 'minor', traces: [ ... ] }
 
 await suggest(null, proposed);
@@ -172,7 +172,7 @@ await version(base, proposed);
 // { version: 'minor', traces: [ ... ] }
 ```
 
-`suggest` rejects if a version is invalid or too high for the breaking level.
+`suggest` rejects if a version is invalid or too high for the stage.
 The package is also published to GitHub Packages as
 `@octue/json-schema-semver`.
 
@@ -183,7 +183,7 @@ Wheels are attached to each release.
 ```python
 import json_schema_semver
 
-json_schema_semver.suggest(base, proposed, base_version="0.3.1", breaking="minor")
+json_schema_semver.suggest(base, proposed, base_version="0.3.1", stage="development")
 # {'version': '0.4.0', 'change': 'minor', 'traces': [...]}
 
 json_schema_semver.suggest(None, proposed, initial_version="0.1.0")
@@ -194,7 +194,7 @@ json_schema_semver.version(base, proposed)
 ```
 
 `suggest` raises `ValueError` if a version is invalid or too high for the
-breaking level.
+stage.
 
 ## Renamed from version-cruzer
 

@@ -6,10 +6,10 @@
 #include <stdexcept>
 #include <string>
 
-using octue::jss::Breaking;
 using octue::jss::bump;
 using octue::jss::Change;
 using octue::jss::SemVer;
+using octue::jss::Stage;
 using octue::jss::suggest;
 
 static const auto SCHEMA_BASE{sourcemeta::core::parse_json(R"JSON({
@@ -42,143 +42,143 @@ static const auto SCHEMA_UNKNOWN_FROM{sourcemeta::core::parse_json(R"JSON({
   "minimum": 1
 })JSON")};
 
-// Breaking level: major (standard semantic versioning)
+// Stage: major (standard semantic versioning)
 
-TEST(JSS_bump, breaking_major_stable_major) {
+TEST(JSS_bump, stage_stable_one_major) {
   EXPECT_EQ(bump(SemVer::Major, "2.3.1"), "3.0.0");
 }
 
-TEST(JSS_bump, breaking_major_stable_minor) {
+TEST(JSS_bump, stage_stable_one_minor) {
   EXPECT_EQ(bump(SemVer::Minor, "2.3.1"), "2.4.0");
 }
 
-TEST(JSS_bump, breaking_major_stable_patch) {
+TEST(JSS_bump, stage_stable_one_patch) {
   EXPECT_EQ(bump(SemVer::Patch, "2.3.1"), "2.3.2");
 }
 
-TEST(JSS_bump, breaking_major_stable_equal) {
+TEST(JSS_bump, stage_stable_one_equal) {
   EXPECT_EQ(bump(SemVer::Equal, "2.3.1"), "2.3.1");
 }
 
-TEST(JSS_bump, breaking_major_stable_major_other) {
-  EXPECT_EQ(bump(SemVer::Major, "1.1.3", Breaking::Major), "2.0.0");
+TEST(JSS_bump, stage_stable_one_major_other) {
+  EXPECT_EQ(bump(SemVer::Major, "1.1.3", Stage::Stable), "2.0.0");
 }
 
-TEST(JSS_bump, breaking_major_zero_minor_major) {
-  EXPECT_EQ(bump(SemVer::Major, "0.1.0", Breaking::Major), "1.0.0");
+TEST(JSS_bump, stage_stable_zero_minor_major) {
+  EXPECT_EQ(bump(SemVer::Major, "0.1.0", Stage::Stable), "1.0.0");
 }
 
-TEST(JSS_bump, breaking_major_zero_minor_minor) {
-  EXPECT_EQ(bump(SemVer::Minor, "0.1.9", Breaking::Major), "0.2.0");
+TEST(JSS_bump, stage_stable_zero_minor_minor) {
+  EXPECT_EQ(bump(SemVer::Minor, "0.1.9", Stage::Stable), "0.2.0");
 }
 
-TEST(JSS_bump, breaking_major_zero_minor_patch) {
-  EXPECT_EQ(bump(SemVer::Patch, "0.1.9", Breaking::Major), "0.1.10");
+TEST(JSS_bump, stage_stable_zero_minor_patch) {
+  EXPECT_EQ(bump(SemVer::Patch, "0.1.9", Stage::Stable), "0.1.10");
 }
 
-TEST(JSS_bump, breaking_major_zero_patch_major) {
-  EXPECT_EQ(bump(SemVer::Major, "0.0.4", Breaking::Major), "1.0.0");
+TEST(JSS_bump, stage_stable_zero_patch_major) {
+  EXPECT_EQ(bump(SemVer::Major, "0.0.4", Stage::Stable), "1.0.0");
 }
 
-// Breaking level: minor (0.x development)
+// Stage: minor (0.x development)
 
-TEST(JSS_bump, breaking_minor_major) {
-  EXPECT_EQ(bump(SemVer::Major, "0.1.9", Breaking::Minor), "0.2.0");
+TEST(JSS_bump, stage_development_major) {
+  EXPECT_EQ(bump(SemVer::Major, "0.1.9", Stage::Development), "0.2.0");
 }
 
-TEST(JSS_bump, breaking_minor_minor) {
-  EXPECT_EQ(bump(SemVer::Minor, "0.1.9", Breaking::Minor), "0.2.0");
+TEST(JSS_bump, stage_development_minor) {
+  EXPECT_EQ(bump(SemVer::Minor, "0.1.9", Stage::Development), "0.2.0");
 }
 
-TEST(JSS_bump, breaking_minor_patch) {
-  EXPECT_EQ(bump(SemVer::Patch, "0.1.9", Breaking::Minor), "0.1.10");
+TEST(JSS_bump, stage_development_patch) {
+  EXPECT_EQ(bump(SemVer::Patch, "0.1.9", Stage::Development), "0.1.10");
 }
 
-TEST(JSS_bump, breaking_minor_equal) {
-  EXPECT_EQ(bump(SemVer::Equal, "0.1.9", Breaking::Minor), "0.1.9");
+TEST(JSS_bump, stage_development_equal) {
+  EXPECT_EQ(bump(SemVer::Equal, "0.1.9", Stage::Development), "0.1.9");
 }
 
-TEST(JSS_bump, breaking_minor_zero_patch_major) {
-  EXPECT_EQ(bump(SemVer::Major, "0.0.4", Breaking::Minor), "0.1.0");
+TEST(JSS_bump, stage_development_zero_patch_major) {
+  EXPECT_EQ(bump(SemVer::Major, "0.0.4", Stage::Development), "0.1.0");
 }
 
-TEST(JSS_bump, breaking_minor_stable_error) {
-  EXPECT_THROW(bump(SemVer::Major, "1.0.0", Breaking::Minor),
-               octue::jss::BreakingLevelError);
-  EXPECT_THROW(bump(SemVer::Equal, "1.2.0", Breaking::Minor),
-               octue::jss::BreakingLevelError);
+TEST(JSS_bump, stage_development_one_error) {
+  EXPECT_THROW(bump(SemVer::Major, "1.0.0", Stage::Development),
+               octue::jss::StageError);
+  EXPECT_THROW(bump(SemVer::Equal, "1.2.0", Stage::Development),
+               octue::jss::StageError);
 }
 
-TEST(JSS_bump, breaking_minor_stable_pre_release_error) {
-  EXPECT_THROW(bump(SemVer::Patch, "1.0.0-rc.1", Breaking::Minor),
-               octue::jss::BreakingLevelError);
+TEST(JSS_bump, stage_development_one_pre_release_error) {
+  EXPECT_THROW(bump(SemVer::Patch, "1.0.0-rc.1", Stage::Development),
+               octue::jss::StageError);
 }
 
-TEST(JSS_bump, breaking_minor_stable_error_message) {
+TEST(JSS_bump, stage_development_one_error_message) {
   try {
-    bump(SemVer::Major, "1.2.0", Breaking::Minor);
+    bump(SemVer::Major, "1.2.0", Stage::Development);
     FAIL();
-  } catch (const octue::jss::BreakingLevelError &error) {
+  } catch (const octue::jss::StageError &error) {
     EXPECT_STREQ(error.what(),
-                 "A breaking change cannot bump the minor number of version "
-                 "1.2.0: the `breaking` level must be `major`");
+                 "Version 1.2.0 is too high for the `development` stage: "
+                 "the stage must be `stable`");
   }
 }
 
-// Breaking level: patch (0.0.x prototyping)
+// Stage: patch (0.0.x prototyping)
 
-TEST(JSS_bump, breaking_patch_major) {
-  EXPECT_EQ(bump(SemVer::Major, "0.0.4", Breaking::Patch), "0.0.5");
+TEST(JSS_bump, stage_prototype_major) {
+  EXPECT_EQ(bump(SemVer::Major, "0.0.4", Stage::Prototype), "0.0.5");
 }
 
-TEST(JSS_bump, breaking_patch_minor) {
-  EXPECT_EQ(bump(SemVer::Minor, "0.0.4", Breaking::Patch), "0.0.5");
+TEST(JSS_bump, stage_prototype_minor) {
+  EXPECT_EQ(bump(SemVer::Minor, "0.0.4", Stage::Prototype), "0.0.5");
 }
 
-TEST(JSS_bump, breaking_patch_patch) {
-  EXPECT_EQ(bump(SemVer::Patch, "0.0.4", Breaking::Patch), "0.0.5");
+TEST(JSS_bump, stage_prototype_patch) {
+  EXPECT_EQ(bump(SemVer::Patch, "0.0.4", Stage::Prototype), "0.0.5");
 }
 
-TEST(JSS_bump, breaking_patch_equal) {
-  EXPECT_EQ(bump(SemVer::Equal, "0.0.4", Breaking::Patch), "0.0.4");
+TEST(JSS_bump, stage_prototype_equal) {
+  EXPECT_EQ(bump(SemVer::Equal, "0.0.4", Stage::Prototype), "0.0.4");
 }
 
-TEST(JSS_bump, breaking_patch_zero_minor_error) {
-  EXPECT_THROW(bump(SemVer::Major, "0.1.0", Breaking::Patch),
-               octue::jss::BreakingLevelError);
-  EXPECT_THROW(bump(SemVer::Patch, "0.1.3", Breaking::Patch),
-               octue::jss::BreakingLevelError);
+TEST(JSS_bump, stage_prototype_zero_minor_error) {
+  EXPECT_THROW(bump(SemVer::Major, "0.1.0", Stage::Prototype),
+               octue::jss::StageError);
+  EXPECT_THROW(bump(SemVer::Patch, "0.1.3", Stage::Prototype),
+               octue::jss::StageError);
 }
 
-TEST(JSS_bump, breaking_patch_stable_error) {
-  EXPECT_THROW(bump(SemVer::Major, "1.0.0", Breaking::Patch),
-               octue::jss::BreakingLevelError);
+TEST(JSS_bump, stage_prototype_one_error) {
+  EXPECT_THROW(bump(SemVer::Major, "1.0.0", Stage::Prototype),
+               octue::jss::StageError);
 }
 
-TEST(JSS_bump, breaking_patch_zero_minor_pre_release_error) {
-  EXPECT_THROW(bump(SemVer::Major, "0.1.0-rc.1", Breaking::Patch),
-               octue::jss::BreakingLevelError);
+TEST(JSS_bump, stage_prototype_zero_minor_pre_release_error) {
+  EXPECT_THROW(bump(SemVer::Major, "0.1.0-rc.1", Stage::Prototype),
+               octue::jss::StageError);
 }
 
-TEST(JSS_bump, breaking_patch_zero_minor_error_message) {
+TEST(JSS_bump, stage_prototype_zero_minor_error_message) {
   try {
-    bump(SemVer::Major, "0.1.3", Breaking::Patch);
+    bump(SemVer::Major, "0.1.3", Stage::Prototype);
     FAIL();
-  } catch (const octue::jss::BreakingLevelError &error) {
+  } catch (const octue::jss::StageError &error) {
     EXPECT_STREQ(error.what(),
-                 "A breaking change cannot bump the patch number of version "
-                 "0.1.3: the `breaking` level must be `minor` or `major`");
+                 "Version 0.1.3 is too high for the `prototype` stage: "
+                 "the stage must be `development` or `stable`");
   }
 }
 
-TEST(JSS_bump, breaking_patch_stable_error_message) {
+TEST(JSS_bump, stage_prototype_one_error_message) {
   try {
-    bump(SemVer::Major, "2.0.0", Breaking::Patch);
+    bump(SemVer::Major, "2.0.0", Stage::Prototype);
     FAIL();
-  } catch (const octue::jss::BreakingLevelError &error) {
+  } catch (const octue::jss::StageError &error) {
     EXPECT_STREQ(error.what(),
-                 "A breaking change cannot bump the patch number of version "
-                 "2.0.0: the `breaking` level must be `major`");
+                 "Version 2.0.0 is too high for the `prototype` stage: "
+                 "the stage must be `stable`");
   }
 }
 
@@ -201,9 +201,10 @@ TEST(JSS_bump, pre_release_equal) {
   EXPECT_EQ(bump(SemVer::Equal, "2.3.1-rc0"), "2.3.1-rc1");
 }
 
-TEST(JSS_bump, pre_release_zero_with_breaking_levels) {
-  EXPECT_EQ(bump(SemVer::Major, "0.3.0-rc.1", Breaking::Minor), "0.3.0-rc.2");
-  EXPECT_EQ(bump(SemVer::Major, "0.0.3-rc.1", Breaking::Patch), "0.0.3-rc.2");
+TEST(JSS_bump, pre_release_zero_with_stages) {
+  EXPECT_EQ(bump(SemVer::Major, "0.3.0-rc.1", Stage::Development),
+            "0.3.0-rc.2");
+  EXPECT_EQ(bump(SemVer::Major, "0.0.3-rc.1", Stage::Prototype), "0.0.3-rc.2");
 }
 
 TEST(JSS_bump, pre_release_dotted) {
@@ -277,24 +278,24 @@ TEST(JSS_suggest, initial_default) {
   EXPECT_TRUE(result.traces.empty());
 }
 
-TEST(JSS_suggest, initial_ignores_base_version_and_breaking) {
+TEST(JSS_suggest, initial_ignores_base_version_and_stage) {
   const auto result{
-      suggest(std::nullopt, SCHEMA_BASE, "3.2.1", Breaking::Patch)};
+      suggest(std::nullopt, SCHEMA_BASE, "3.2.1", Stage::Prototype)};
   EXPECT_EQ(result.change, Change::Initial);
   EXPECT_EQ(result.version, "0.0.1");
 }
 
 TEST(JSS_suggest, initial_custom) {
-  const auto result{suggest(std::nullopt, SCHEMA_BASE, std::nullopt,
-                            Breaking::Major, "0.1.0")};
+  const auto result{
+      suggest(std::nullopt, SCHEMA_BASE, std::nullopt, Stage::Stable, "0.1.0")};
   EXPECT_EQ(result.change, Change::Initial);
   EXPECT_EQ(result.version, "0.1.0");
 }
 
 TEST(JSS_suggest, initial_invalid) {
-  EXPECT_THROW(suggest(std::nullopt, SCHEMA_BASE, std::nullopt, Breaking::Major,
-                       "first"),
-               octue::jss::InvalidVersionError);
+  EXPECT_THROW(
+      suggest(std::nullopt, SCHEMA_BASE, std::nullopt, Stage::Stable, "first"),
+      octue::jss::InvalidVersionError);
 }
 
 TEST(JSS_suggest, no_base_version) {
@@ -338,23 +339,23 @@ TEST(JSS_suggest, major) {
   EXPECT_FALSE(result.traces.empty());
 }
 
-TEST(JSS_suggest, major_breaking_minor) {
+TEST(JSS_suggest, major_stage_development) {
   const auto result{
-      suggest(SCHEMA_BASE, SCHEMA_MAJOR, "0.3.1", Breaking::Minor)};
+      suggest(SCHEMA_BASE, SCHEMA_MAJOR, "0.3.1", Stage::Development)};
   EXPECT_EQ(result.change, Change::Major);
   EXPECT_EQ(result.version, "0.4.0");
 }
 
-TEST(JSS_suggest, major_breaking_patch) {
+TEST(JSS_suggest, major_stage_prototype) {
   const auto result{
-      suggest(SCHEMA_BASE, SCHEMA_MAJOR, "0.0.3", Breaking::Patch)};
+      suggest(SCHEMA_BASE, SCHEMA_MAJOR, "0.0.3", Stage::Prototype)};
   EXPECT_EQ(result.change, Change::Major);
   EXPECT_EQ(result.version, "0.0.4");
 }
 
-TEST(JSS_suggest, breaking_level_error) {
-  EXPECT_THROW(suggest(SCHEMA_BASE, SCHEMA_MAJOR, "0.1.3", Breaking::Patch),
-               octue::jss::BreakingLevelError);
+TEST(JSS_suggest, stage_error) {
+  EXPECT_THROW(suggest(SCHEMA_BASE, SCHEMA_MAJOR, "0.1.3", Stage::Prototype),
+               octue::jss::StageError);
 }
 
 TEST(JSS_suggest, invalid_base_version) {
@@ -380,15 +381,15 @@ TEST(JSS_suggest, to_string) {
   EXPECT_EQ(octue::jss::to_string(Change::Initial), "initial");
   EXPECT_EQ(octue::jss::to_string(Change::Equal), "equal");
   EXPECT_EQ(octue::jss::to_string(SemVer::Major), "major");
-  EXPECT_EQ(octue::jss::to_string(Breaking::Patch), "patch");
+  EXPECT_EQ(octue::jss::to_string(Stage::Prototype), "prototype");
   EXPECT_EQ(octue::jss::to_string(octue::jss::Compatibility::Incompatible),
             "incompatible");
 }
 
-TEST(JSS_suggest, to_breaking) {
-  EXPECT_EQ(octue::jss::to_breaking("major"), Breaking::Major);
-  EXPECT_EQ(octue::jss::to_breaking("minor"), Breaking::Minor);
-  EXPECT_EQ(octue::jss::to_breaking("patch"), Breaking::Patch);
-  EXPECT_FALSE(octue::jss::to_breaking("Major").has_value());
-  EXPECT_FALSE(octue::jss::to_breaking("").has_value());
+TEST(JSS_suggest, to_stage) {
+  EXPECT_EQ(octue::jss::to_stage("stable"), Stage::Stable);
+  EXPECT_EQ(octue::jss::to_stage("development"), Stage::Development);
+  EXPECT_EQ(octue::jss::to_stage("prototype"), Stage::Prototype);
+  EXPECT_FALSE(octue::jss::to_stage("Stable").has_value());
+  EXPECT_FALSE(octue::jss::to_stage("").has_value());
 }

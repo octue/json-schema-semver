@@ -60,12 +60,12 @@ static auto version(pybind11::object from, pybind11::object to)
 
 static auto suggest(pybind11::object base, pybind11::object proposed,
                     std::optional<std::string> base_version,
-                    const std::string &breaking,
+                    const std::string &stage,
                     const std::string &initial_version) -> pybind11::dict {
-  const auto breaking_level{octue::jss::to_breaking(breaking)};
-  if (!breaking_level.has_value()) {
+  const auto stage_value{octue::jss::to_stage(stage)};
+  if (!stage_value.has_value()) {
     throw pybind11::value_error(
-        "`breaking` must be one of 'major', 'minor' or 'patch'");
+        "`stage` must be one of 'stable', 'development' or 'prototype'");
   }
 
   const std::optional<sourcemeta::core::JSON> base_json{
@@ -78,10 +78,10 @@ static auto suggest(pybind11::object base, pybind11::object proposed,
   octue::jss::Suggestion suggestion;
   try {
     suggestion = octue::jss::suggest(base_json, proposed_json, base_version,
-                                     breaking_level.value(), initial_version);
+                                     stage_value.value(), initial_version);
   } catch (const octue::jss::InvalidVersionError &error) {
     throw pybind11::value_error(error.what());
-  } catch (const octue::jss::BreakingLevelError &error) {
+  } catch (const octue::jss::StageError &error) {
     throw pybind11::value_error(error.what());
   }
 
@@ -124,6 +124,6 @@ PYBIND11_MODULE(json_schema_semver, m) {
         "schema (or None if there is none) and optionally its version",
         pybind11::arg("base"), pybind11::arg("proposed"),
         pybind11::arg("base_version") = pybind11::none(),
-        pybind11::arg("breaking") = "major",
+        pybind11::arg("stage") = "stable",
         pybind11::arg("initial_version") = "0.0.1");
 }

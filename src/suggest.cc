@@ -74,13 +74,13 @@ auto parse_version(const std::string_view input) -> sourcemeta::core::SemVer {
 enum class Component : std::uint8_t { Major, Minor, Patch };
 
 // Which component of the version a (non-equal) change bumps
-auto component(const octue::jss::SemVer change,
-               const octue::jss::Breaking breaking) -> Component {
-  using octue::jss::Breaking;
+auto component(const octue::jss::SemVer change, const octue::jss::Stage stage)
+    -> Component {
   using octue::jss::SemVer;
+  using octue::jss::Stage;
   assert(change != SemVer::Equal);
-  switch (breaking) {
-    case Breaking::Major:
+  switch (stage) {
+    case Stage::Stable:
       switch (change) {
         case SemVer::Major:
           return Component::Major;
@@ -89,38 +89,37 @@ auto component(const octue::jss::SemVer change,
         default:
           return Component::Patch;
       }
-    case Breaking::Minor:
+    case Stage::Development:
       return change == SemVer::Patch ? Component::Patch : Component::Minor;
-    case Breaking::Patch:
+    case Stage::Prototype:
       return Component::Patch;
   }
 
   std::unreachable();
 }
 
-auto validate_breaking(const sourcemeta::core::SemVer &base,
-                       const std::string_view base_version,
-                       const octue::jss::Breaking breaking) -> void {
-  using octue::jss::Breaking;
-  const auto required{base.major() > 0   ? Breaking::Major
-                      : base.minor() > 0 ? Breaking::Minor
-                                         : Breaking::Patch};
-  // The enumeration is ordered from the highest to the lowest level
-  if (breaking <= required) {
+auto validate_stage(const sourcemeta::core::SemVer &base,
+                    const std::string_view base_version,
+                    const octue::jss::Stage stage) -> void {
+  using octue::jss::Stage;
+  const auto latest{base.major() > 0   ? Stage::Stable
+                    : base.minor() > 0 ? Stage::Development
+                                       : Stage::Prototype};
+  // The enumeration is ordered from the latest to the earliest stage
+  if (stage <= latest) {
     return;
   }
 
   std::ostringstream message;
-  message << "A breaking change cannot bump the "
-          << octue::jss::to_string(breaking) << " number of version "
-          << base_version << ": the `breaking` level must be ";
-  if (required == Breaking::Major) {
-    message << "`major`";
+  message << "Version " << base_version << " is too high for the `"
+          << octue::jss::to_string(stage) << "` stage: the stage must be ";
+  if (latest == Stage::Stable) {
+    message << "`stable`";
   } else {
-    message << "`minor` or `major`";
+    message << "`development` or `stable`";
   }
 
-  throw octue::jss::BreakingLevelError{message.str()};
+  throw octue::jss::StageError{message.str()};
 }
 
 } // namespace
@@ -128,9 +127,9 @@ auto validate_breaking(const sourcemeta::core::SemVer &base,
 namespace octue::jss {
 
 auto bump(const SemVer change, const std::string_view base_version,
-          const Breaking breaking) -> std::string {
+          const Stage stage) -> std::string {
   const auto base{parse_version(base_version)};
-  validate_breaking(base, base_version, breaking);
+  validate_stage(base, base_version, stage);
 
   // A pre-release moves on to the next pre-release whatever the change is. In
   // this case, we cannot tell a re-published identical schema from one whose
@@ -146,7 +145,7 @@ auto bump(const SemVer change, const std::string_view base_version,
     return base.to_string();
   }
 
-  switch (component(change, breaking)) {
+  switch (component(change, stage)) {
     case Component::Major:
       return core_to_string(base.major() + 1, 0, 0);
     case Component::Minor:
@@ -160,9 +159,8 @@ auto bump(const SemVer change, const std::string_view base_version,
 
 auto suggest(const std::optional<sourcemeta::core::JSON> &base,
              const sourcemeta::core::JSON &proposed,
-             const std::optional<std::string> &base_version,
-             const Breaking breaking, const std::string_view initial_version)
-    -> Suggestion {
+             const std::optional<std::string> &base_version, const Stage stage,
+             const std::string_view initial_version) -> Suggestion {
   if (!base.has_value()) {
     // Just to validate it
     const auto initial{parse_version(initial_version)};
@@ -196,7 +194,7 @@ auto suggest(const std::optional<sourcemeta::core::JSON> &base,
 
   std::optional<std::string> new_version;
   if (base_version.has_value()) {
-    new_version = bump(result.version.value(), base_version.value(), breaking);
+    new_version = bump(result.version.value(), base_version.value(), stage);
   }
 
   return {.change = change,
@@ -251,14 +249,14 @@ auto to_string(const Change value) noexcept -> std::string_view {
   std::unreachable();
 }
 
-auto to_string(const Breaking value) noexcept -> std::string_view {
+auto to_string(const Stage value) noexcept -> std::string_view {
   switch (value) {
-    case Breaking::Major:
-      return "major";
-    case Breaking::Minor:
-      return "minor";
-    case Breaking::Patch:
-      return "patch";
+    case Stage::Stable:
+      return "stable";
+    case Stage::Development:
+      return "development";
+    case Stage::Prototype:
+      return "prototype";
   }
 
   std::unreachable();
@@ -311,14 +309,13 @@ auto to_json(const Suggestion &suggestion) -> sourcemeta::core::JSON {
   return output;
 }
 
-auto to_breaking(const std::string_view value) noexcept
-    -> std::optional<Breaking> {
-  if (value == "major") {
-    return Breaking::Major;
-  } else if (value == "minor") {
-    return Breaking::Minor;
-  } else if (value == "patch") {
-    return Breaking::Patch;
+auto to_stage(const std::string_view value) noexcept -> std::optional<Stage> {
+  if (value == "stable") {
+    return Stage::Stable;
+  } else if (value == "development") {
+    return Stage::Development;
+  } else if (value == "prototype") {
+    return Stage::Prototype;
   } else {
     return std::nullopt;
   }

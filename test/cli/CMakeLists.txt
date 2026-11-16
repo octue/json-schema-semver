@@ -4,7 +4,7 @@ foreach(name IN ITEMS
     suggest_base_version
     suggest_no_base_version
     suggest_initial
-    suggest_breaking
+    suggest_stage
     suggest_unknown
     suggest_invalid_input
     compare

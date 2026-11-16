@@ -21,10 +21,11 @@ namespace octue::jss {
 /// The kind of change between a base schema and a proposed schema
 enum class Change : std::uint8_t { Equal, Initial, Patch, Minor, Major };
 
-/// Which part of the version a breaking change bumps. `Major` is standard
-/// semantic versioning. `Minor` is for projects in 0.x development, and
-/// `Patch` is for projects in 0.0.x prototyping
-enum class Breaking : std::uint8_t { Major, Minor, Patch };
+/// The stage of a project, which sets the part of the version that a breaking
+/// change bumps. `Stable` is standard semantic versioning (X+1.0.0),
+/// `Development` is for versions below 1.0.0 (0.Y+1.0), and `Prototype` is for
+/// versions below 0.1.0 (0.0.Z+1)
+enum class Stage : std::uint8_t { Stable, Development, Prototype };
 
 struct Suggestion {
   /// Not set if the schemas could not be compared
@@ -34,9 +35,9 @@ struct Suggestion {
   std::vector<Trace> traces;
 };
 
-/// The base version is too high for the given breaking level. For example,
-/// a breaking change cannot bump the patch number of a 0.1.x version
-class OCTUE_JSS_EXPORT BreakingLevelError : public std::runtime_error {
+/// The base version is too high for the given stage. For example, a 0.1.x
+/// version is past the prototype stage
+class OCTUE_JSS_EXPORT StageError : public std::runtime_error {
 public:
   using std::runtime_error::runtime_error;
 };
@@ -51,7 +52,7 @@ public:
 /// arithmetic and does not involve any schema
 OCTUE_JSS_EXPORT
 auto bump(const SemVer change, const std::string_view base_version,
-          const Breaking breaking = Breaking::Major) -> std::string;
+          const Stage stage = Stage::Stable) -> std::string;
 
 /// Compare a proposed schema against an optional base schema and suggest the
 /// semantic version of the proposed schema. If there is no base schema, the
@@ -61,7 +62,7 @@ OCTUE_JSS_EXPORT
 auto suggest(const std::optional<sourcemeta::core::JSON> &base,
              const sourcemeta::core::JSON &proposed,
              const std::optional<std::string> &base_version = std::nullopt,
-             const Breaking breaking = Breaking::Major,
+             const Stage stage = Stage::Stable,
              const std::string_view initial_version = "0.0.1") -> Suggestion;
 
 OCTUE_JSS_EXPORT
@@ -71,7 +72,7 @@ auto to_string(const SemVer value) noexcept -> std::string_view;
 OCTUE_JSS_EXPORT
 auto to_string(const Change value) noexcept -> std::string_view;
 OCTUE_JSS_EXPORT
-auto to_string(const Breaking value) noexcept -> std::string_view;
+auto to_string(const Stage value) noexcept -> std::string_view;
 
 /// Convert a comparison result into a JSON object of the form
 /// `{ "version": "minor", "traces": [ ... ] }`
@@ -83,10 +84,9 @@ auto to_json(const Result &result) -> sourcemeta::core::JSON;
 OCTUE_JSS_EXPORT
 auto to_json(const Suggestion &suggestion) -> sourcemeta::core::JSON;
 
-/// Parse `major`, `minor` or `patch`
+/// Parse `stable`, `development` or `prototype`
 OCTUE_JSS_EXPORT
-auto to_breaking(const std::string_view value) noexcept
-    -> std::optional<Breaking>;
+auto to_stage(const std::string_view value) noexcept -> std::optional<Stage>;
 
 } // namespace octue::jss
 

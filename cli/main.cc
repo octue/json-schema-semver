@@ -28,7 +28,7 @@ constexpr std::string_view USAGE{
 Commands:
 
   suggest <proposed.json> [--base <base.json>] [--base-version <version>]
-          [--breaking major|minor|patch] [--initial-version <version>]
+          [--stage stable|development|prototype] [--initial-version <version>]
 
     Suggest the semantic version of a proposed schema by comparing it to a
     base schema. The result is printed as JSON:
@@ -40,10 +40,11 @@ Commands:
                            is the initial version
     --base-version, -v     The semantic version of the base schema. If
                            omitted, only the kind of change is reported
-    --breaking, -k         Which part of the version a breaking change bumps:
-                             major  X+1.0.0 (default)
-                             minor  0.Y+1.0, for versions below 1.0.0
-                             patch  0.0.Z+1, for versions below 0.1.0
+    --stage, -s            The stage of the project, which sets the part of
+                           the version that a breaking change bumps:
+                             stable       X+1.0.0 (default)
+                             development  0.Y+1.0, for versions below 1.0.0
+                             prototype    0.0.Z+1, for versions below 0.1.0
     --initial-version, -i  The version to suggest when there is no base
                            schema (default: 0.0.1)
 
@@ -104,16 +105,16 @@ auto command_suggest(const sourcemeta::core::Options &app) -> int {
         "The suggest command takes exactly one proposed schema"};
   }
 
-  auto breaking{octue::jss::Breaking::Major};
-  if (const auto value{single(app, "breaking")}; value.has_value()) {
-    const auto parsed{octue::jss::to_breaking(value.value())};
+  auto stage{octue::jss::Stage::Stable};
+  if (const auto value{single(app, "stage")}; value.has_value()) {
+    const auto parsed{octue::jss::to_stage(value.value())};
     if (!parsed.has_value()) {
-      throw std::runtime_error{
-          "The --breaking option must be one of major, minor or patch, not: " +
-          value.value()};
+      throw std::runtime_error{"The --stage option must be one of stable, "
+                               "development or prototype, not: " +
+                               value.value()};
     }
 
-    breaking = parsed.value();
+    stage = parsed.value();
   }
 
   const auto proposed{read_schema(app.positional().at(1))};
@@ -125,8 +126,8 @@ auto command_suggest(const sourcemeta::core::Options &app) -> int {
   const auto base_version{single(app, "base-version")};
   const auto initial_version{single(app, "initial-version").value_or("0.0.1")};
 
-  const auto suggestion{octue::jss::suggest(base, proposed, base_version,
-                                            breaking, initial_version)};
+  const auto suggestion{octue::jss::suggest(base, proposed, base_version, stage,
+                                            initial_version)};
   print(octue::jss::to_json(suggestion));
   if (!suggestion.change.has_value()) {
     std::cerr << "error: The schemas could not be compared. They are too "
@@ -161,7 +162,7 @@ auto run(const int argc, const char *const argv[]) -> int {
   app.flag("version", {});
   app.option("base", {"b"});
   app.option("base-version", {"v"});
-  app.option("breaking", {"k"});
+  app.option("stage", {"s"});
   app.option("initial-version", {"i"});
   app.parse(argc, argv);
 

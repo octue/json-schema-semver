@@ -17,10 +17,10 @@ inputs:
     description: 'The semantic version of the base schema. If not provided, only the type of change is reported.'
     required: false
     default: ''
-  breaking:
-    description: 'Which part of the version a breaking change bumps: `major` (X+1.0.0), `minor` (0.Y+1.0, for versions below 1.0.0) or `patch` (0.0.Z+1, for versions below 0.1.0).'
+  stage:
+    description: 'The stage of the project, which sets the part of the version that a breaking change bumps: `stable` (X+1.0.0), `development` (0.Y+1.0, for versions below 1.0.0) or `prototype` (0.0.Z+1, for versions below 0.1.0).'
     required: false
-    default: 'major'
+    default: 'stable'
   initial_version:
     description: 'The semantic version to suggest when there is no base schema.'
     required: false
@@ -55,7 +55,7 @@ runs:
         INPUT_PATH: ${{ inputs.path }}
         INPUT_BASE_PATH: ${{ inputs.base_path }}
         INPUT_BASE_VERSION: ${{ inputs.base_version }}
-        INPUT_BREAKING: ${{ inputs.breaking }}
+        INPUT_STAGE: ${{ inputs.stage }}
         INPUT_INITIAL_VERSION: ${{ inputs.initial_version }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
         INPUT_CLI_PATH: ${{ inputs.cli_path }}

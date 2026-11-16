@@ -20,8 +20,8 @@ expect stdout << 'JSON'
 }
 JSON
 
-# Without a base schema, the base version and breaking level do not matter
-run suggest "$SCHEMAS/base.json" --base-version 3.2.1 --breaking patch
+# Without a base schema, the base version and stage do not matter
+run suggest "$SCHEMAS/base.json" --base-version 3.2.1 --stage prototype
 expect_code 0
 grep -q '"version": "0.0.1"' "$TMP/stdout"
 

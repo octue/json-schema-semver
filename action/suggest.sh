@@ -91,8 +91,8 @@ fi
 
 # (2) Suggest the version
 
-BREAKING="$(echo "${INPUT_BREAKING:-major}" | tr '[:upper:]' '[:lower:]')"
-ARGUMENTS=(suggest "$INPUT_PATH" --breaking "$BREAKING")
+STAGE="$(echo "${INPUT_STAGE:-stable}" | tr '[:upper:]' '[:lower:]')"
+ARGUMENTS=(suggest "$INPUT_PATH" --stage "$STAGE")
 
 if [ -n "${INPUT_BASE_PATH:-}" ]
 then

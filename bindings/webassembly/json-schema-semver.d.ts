@@ -38,17 +38,18 @@ declare module "@octue/json-schema-semver" {
     | "major"
     | null;
 
-  export type BreakingLevel = "major" | "minor" | "patch";
+  export type Stage = "stable" | "development" | "prototype";
 
   export interface SuggestOptions {
     /** The semantic version of the base schema. */
     baseVersion?: string;
     /**
-     * Which part of the version a breaking change bumps. `major` (the
-     * default) is standard semantic versioning, `minor` is for versions
-     * below 1.0.0 and `patch` is for versions below 0.1.0.
+     * The stage of the project, which sets the part of the version that a
+     * breaking change bumps. `stable` (the default) is standard semantic
+     * versioning, `development` is for versions below 1.0.0 and `prototype`
+     * is for versions below 0.1.0.
      */
-    breaking?: BreakingLevel;
+    stage?: Stage;
     /** The version to suggest if there is no base schema (`0.0.1`). */
     initialVersion?: string;
   }
@@ -68,7 +69,7 @@ declare module "@octue/json-schema-semver" {
    * @param proposed - The proposed schema object or JSON string.
    * @param options - The base version and how to bump it.
    * @returns A promise that resolves to the suggestion. It rejects if a
-   * version is invalid or too high for the breaking level.
+   * version is invalid or too high for the stage.
    */
   export function suggest(
     base: string | object | null,

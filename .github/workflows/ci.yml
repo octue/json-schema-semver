@@ -82,3 +82,147 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build --tag json-schema-semver . --file bindings/python/Dockerfile --progress plain
+
+  # Test the GitHub Action defined in `action.yml`
+  action:
+    if: "!contains(github.event.head_commit.message, 'skipci')"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: >
+          cmake -S . -B ./build
+          -DCMAKE_BUILD_TYPE:STRING=Release
+          -DJSS_CLI:BOOL=ON
+          -DJSS_TESTS:BOOL=OFF
+          -DJSS_PYTHON:BOOL=OFF
+          -DBUILD_SHARED_LIBS:BOOL=OFF
+      - run: cmake --build ./build --config Release --target octue_jss_cli --parallel 4
+
+      - name: Minor change at the minor breaking level
+        id: minor
+        uses: ./
+        with:
+          path: test/cli/schemas/minor.json
+          base_path: test/cli/schemas/base.json
+          base_version: 0.3.1
+          breaking: minor
+          cli_path: build/cli/json-schema-semver
+      - run: |
+          test "${{ steps.minor.outputs.version }}" = "0.4.0"
+          test "${{ steps.minor.outputs.change }}" = "minor"
+          test "$(echo "$TRACES" | jq --raw-output '.[0].right')" = "/enum"
+        env:
+          TRACES: ${{ steps.minor.outputs.traces }}
+
+      - name: Breaking change at the default breaking level
+        id: major
+        uses: ./
+        with:
+          path: test/cli/schemas/major.json
+          base_path: test/cli/schemas/base.json
+          base_version: 0.3.1
+          cli_path: build/cli/json-schema-semver
+      - run: |
+          test "${{ steps.major.outputs.version }}" = "1.0.0"
+          test "${{ steps.major.outputs.change }}" = "major"
+
+      - name: Breaking change at the patch breaking level
+        id: patch
+        uses: ./
+        with:
+          path: test/cli/schemas/major.json
+          base_path: test/cli/schemas/base.json
+          base_version: 0.0.3
+          breaking: patch
+          cli_path: build/cli/json-schema-semver
+      - run: |
+          test "${{ steps.patch.outputs.version }}" = "0.0.4"
+          test "${{ steps.patch.outputs.change }}" = "major"
+
+      - name: No base schema
+        id: initial
+        uses: ./
+        with:
+          path: test/cli/schemas/base.json
+          cli_path: build/cli/json-schema-semver
+      - run: |
+          test "${{ steps.initial.outputs.version }}" = "0.0.1"
+          test "${{ steps.initial.outputs.change }}" = "initial"
+          test '${{ steps.initial.outputs.traces }}' = "[]"
+
+      - name: No base schema with a custom initial version
+        id: initial_custom
+        uses: ./
+        with:
+          path: test/cli/schemas/base.json
+          initial_version: 0.1.0
+          cli_path: build/cli/json-schema-semver
+      - run: test "${{ steps.initial_custom.outputs.version }}" = "0.1.0"
+
+      - name: No base version
+        id: no_base_version
+        uses: ./
+        with:
+          path: test/cli/schemas/minor.json
+          base_path: test/cli/schemas/base.json
+          cli_path: build/cli/json-schema-semver
+      - run: |
+          test "${{ steps.no_base_version.outputs.version }}" = ""
+          test "${{ steps.no_base_version.outputs.change }}" = "minor"
+
+      - name: Base version too high for the breaking level
+        id: breaking_error
+        continue-on-error: true
+        uses: ./
+        with:
+          path: test/cli/schemas/major.json
+          base_path: test/cli/schemas/base.json
+          base_version: 0.3.1
+          breaking: patch
+          cli_path: build/cli/json-schema-semver
+      - run: test "${{ steps.breaking_error.outcome }}" = "failure"
+
+      - name: Schemas that cannot be compared
+        id: unknown
+        continue-on-error: true
+        uses: ./
+        with:
+          path: test/cli/schemas/base.json
+          base_path: test/cli/schemas/unknown.json
+          base_version: 1.0.0
+          cli_path: build/cli/json-schema-semver
+      - run: test "${{ steps.unknown.outcome }}" = "failure"
+
+      # Without `cli_path`, the action downloads the tool from a release. To
+      # test that before there is a release, serve the binary we just built
+      # in the same layout as a release
+      - name: Prepare a fake release
+        run: |
+          mkdir -p "$RUNNER_TEMP/release"
+          cp LICENSE NOTICE build/cli
+          tar -czf "$RUNNER_TEMP/release/json-schema-semver-linux-x86_64.tar.gz" \
+            -C build/cli json-schema-semver LICENSE NOTICE
+          cd "$RUNNER_TEMP/release" && sha256sum -- *.tar.gz > SHA256SUMS
+          echo "JSON_SCHEMA_SEMVER_RELEASE_URL=file://$RUNNER_TEMP/release" >> "$GITHUB_ENV"
+      - name: Download the tool
+        id: download
+        uses: ./
+        with:
+          path: test/cli/schemas/minor.json
+          base_path: test/cli/schemas/base.json
+          base_version: 1.2.3
+      - run: |
+          test "${{ steps.download.outputs.version }}" = "1.3.0"
+          test "${{ steps.download.outputs.change }}" = "minor"
+
+      - name: Corrupt the fake release
+        run: echo "0000  json-schema-semver-linux-x86_64.tar.gz" > "$RUNNER_TEMP/release/SHA256SUMS"
+      - name: Download the tool with the wrong checksum
+        id: checksum_error
+        continue-on-error: true
+        uses: ./
+        with:
+          path: test/cli/schemas/minor.json
+          base_path: test/cli/schemas/base.json
+          base_version: 1.2.3
+      - run: test "${{ steps.checksum_error.outcome }}" = "failure"

@@ -30,6 +30,11 @@ jobs:
             build-mode: manual
           - language: python
             build-mode: none
+          - language: javascript-typescript
+            build-mode: none
+          # The workflows and the GitHub Action
+          - language: actions
+            build-mode: none
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
@@ -42,8 +47,17 @@ jobs:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
 
-      # The library and the command-line tool. The tests are left out, as
-      # they would mostly add findings about GoogleTest
+      # The Python bindings need the Python headers
+      - name: Setup python
+        if: matrix.build-mode == 'manual'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # The library, the command-line tool and the Python bindings. The tests
+      # are left out, as they would mostly add findings about GoogleTest. The
+      # WebAssembly bindings are left out too, as they are built with
+      # Emscripten rather than a native compiler
       - name: Build
         if: matrix.build-mode == 'manual'
         run: |
@@ -51,7 +65,7 @@ jobs:
             -DCMAKE_BUILD_TYPE:STRING=Release \
             -DJSS_CLI:BOOL=ON \
             -DJSS_TESTS:BOOL=OFF \
-            -DJSS_PYTHON:BOOL=OFF \
+            -DJSS_PYTHON:BOOL=ON \
             -DBUILD_SHARED_LIBS:BOOL=OFF
           cmake --build ./build --config Release --parallel 4
 

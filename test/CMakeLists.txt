@@ -49,4 +49,7 @@ sourcemeta_googletest(PROJECT octue NAME jss FOLDER "Octue"
     suggest_test.cc)
 
 target_link_libraries(octue_jss_unit PRIVATE octue::jss)
-target_link_libraries(octue_jss_unit PRIVATE sourcemeta::core::semver)
+
+if(JSS_CLI)
+  add_subdirectory(cli)
+endif()

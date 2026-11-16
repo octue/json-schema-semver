@@ -2,8 +2,6 @@
 #include <octue/jss.h>
 #include <octue/jss_suggest.h>
 
-#include <sourcemeta/core/semver.h>
-
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -255,11 +253,19 @@ TEST(JSS_bump, build_metadata_kept_on_equal) {
 }
 
 TEST(JSS_bump, invalid_version) {
-  EXPECT_THROW(bump(SemVer::Patch, "foo"), sourcemeta::core::SemVerParseError);
-  EXPECT_THROW(bump(SemVer::Patch, "1.2"), sourcemeta::core::SemVerParseError);
-  EXPECT_THROW(bump(SemVer::Patch, "v1.2.3"),
-               sourcemeta::core::SemVerParseError);
-  EXPECT_THROW(bump(SemVer::Patch, ""), sourcemeta::core::SemVerParseError);
+  EXPECT_THROW(bump(SemVer::Patch, "foo"), octue::jss::InvalidVersionError);
+  EXPECT_THROW(bump(SemVer::Patch, "1.2"), octue::jss::InvalidVersionError);
+  EXPECT_THROW(bump(SemVer::Patch, "v1.2.3"), octue::jss::InvalidVersionError);
+  EXPECT_THROW(bump(SemVer::Patch, ""), octue::jss::InvalidVersionError);
+}
+
+TEST(JSS_bump, invalid_version_message) {
+  try {
+    bump(SemVer::Patch, "1.2");
+    FAIL();
+  } catch (const octue::jss::InvalidVersionError &error) {
+    EXPECT_STREQ(error.what(), "Not a valid semantic version: 1.2");
+  }
 }
 
 // Suggestions
@@ -288,7 +294,7 @@ TEST(JSS_suggest, initial_custom) {
 TEST(JSS_suggest, initial_invalid) {
   EXPECT_THROW(suggest(std::nullopt, SCHEMA_BASE, std::nullopt, Breaking::Major,
                        "first"),
-               sourcemeta::core::SemVerParseError);
+               octue::jss::InvalidVersionError);
 }
 
 TEST(JSS_suggest, no_base_version) {
@@ -353,7 +359,7 @@ TEST(JSS_suggest, breaking_level_error) {
 
 TEST(JSS_suggest, invalid_base_version) {
   EXPECT_THROW(suggest(SCHEMA_BASE, SCHEMA_MAJOR, "latest"),
-               sourcemeta::core::SemVerParseError);
+               octue::jss::InvalidVersionError);
 }
 
 TEST(JSS_suggest, unknown) {

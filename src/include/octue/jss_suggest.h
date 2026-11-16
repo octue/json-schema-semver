@@ -41,6 +41,12 @@ public:
   using std::runtime_error::runtime_error;
 };
 
+/// A version string is not a valid semantic version
+class OCTUE_JSS_EXPORT InvalidVersionError : public std::runtime_error {
+public:
+  using std::runtime_error::runtime_error;
+};
+
 /// Bump a semantic version given the kind of change. This is pure version
 /// arithmetic and does not involve any schema
 OCTUE_JSS_EXPORT
@@ -65,6 +71,16 @@ OCTUE_JSS_EXPORT
 auto to_string(const Change value) noexcept -> std::string_view;
 OCTUE_JSS_EXPORT
 auto to_string(const Breaking value) noexcept -> std::string_view;
+
+/// Convert a comparison result into a JSON object of the form
+/// `{ "version": "minor", "traces": [ ... ] }`
+OCTUE_JSS_EXPORT
+auto to_json(const Result &result) -> sourcemeta::core::JSON;
+
+/// Convert a suggestion into a JSON object of the form
+/// `{ "version": "1.3.0", "change": "minor", "traces": [ ... ] }`
+OCTUE_JSS_EXPORT
+auto to_json(const Suggestion &suggestion) -> sourcemeta::core::JSON;
 
 /// Parse `major`, `minor` or `patch`
 OCTUE_JSS_EXPORT

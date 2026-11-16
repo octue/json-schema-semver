@@ -61,6 +61,16 @@ auto core_to_string(const std::uint64_t major, const std::uint64_t minor,
   return output.str();
 }
 
+auto parse_version(const std::string_view input) -> sourcemeta::core::SemVer {
+  const auto result{sourcemeta::core::SemVer::from(input)};
+  if (!result.has_value()) {
+    throw octue::jss::InvalidVersionError{"Not a valid semantic version: " +
+                                          std::string{input}};
+  }
+
+  return result.value();
+}
+
 enum class Component : std::uint8_t { Major, Minor, Patch };
 
 // Which component of the version a (non-equal) change bumps
@@ -119,7 +129,7 @@ namespace octue::jss {
 
 auto bump(const SemVer change, const std::string_view base_version,
           const Breaking breaking) -> std::string {
-  const sourcemeta::core::SemVer base{base_version};
+  const auto base{parse_version(base_version)};
   validate_breaking(base, base_version, breaking);
 
   // A pre-release moves on to the next pre-release whatever the change is. In
@@ -155,7 +165,7 @@ auto suggest(const std::optional<sourcemeta::core::JSON> &base,
     -> Suggestion {
   if (!base.has_value()) {
     // Just to validate it
-    const sourcemeta::core::SemVer initial{initial_version};
+    const auto initial{parse_version(initial_version)};
     return {.change = Change::Initial,
             .version = initial.to_string(),
             .traces = {}};
@@ -252,6 +262,53 @@ auto to_string(const Breaking value) noexcept -> std::string_view {
   }
 
   std::unreachable();
+}
+
+static auto traces_to_json(const std::vector<Trace> &traces)
+    -> sourcemeta::core::JSON {
+  auto result{sourcemeta::core::JSON::make_array()};
+  for (const auto &trace : traces) {
+    auto entry{sourcemeta::core::JSON::make_object()};
+    entry.assign("compatibility", sourcemeta::core::JSON{std::string{
+                                      to_string(trace.compatibility)}});
+    entry.assign("left",
+                 trace.left.has_value()
+                     ? sourcemeta::core::JSON{sourcemeta::core::to_string(
+                           trace.left.value())}
+                     : sourcemeta::core::JSON{nullptr});
+    entry.assign("right",
+                 trace.right.has_value()
+                     ? sourcemeta::core::JSON{sourcemeta::core::to_string(
+                           trace.right.value())}
+                     : sourcemeta::core::JSON{nullptr});
+    result.push_back(std::move(entry));
+  }
+
+  return result;
+}
+
+auto to_json(const Result &result) -> sourcemeta::core::JSON {
+  auto output{sourcemeta::core::JSON::make_object()};
+  output.assign("version", result.version.has_value()
+                               ? sourcemeta::core::JSON{std::string{
+                                     to_string(result.version.value())}}
+                               : sourcemeta::core::JSON{nullptr});
+  output.assign("traces", traces_to_json(result.traces));
+  return output;
+}
+
+auto to_json(const Suggestion &suggestion) -> sourcemeta::core::JSON {
+  auto output{sourcemeta::core::JSON::make_object()};
+  output.assign("version",
+                suggestion.version.has_value()
+                    ? sourcemeta::core::JSON{suggestion.version.value()}
+                    : sourcemeta::core::JSON{nullptr});
+  output.assign("change", suggestion.change.has_value()
+                              ? sourcemeta::core::JSON{std::string{
+                                    to_string(suggestion.change.value())}}
+                              : sourcemeta::core::JSON{nullptr});
+  output.assign("traces", traces_to_json(suggestion.traces));
+  return output;
 }
 
 auto to_breaking(const std::string_view value) noexcept

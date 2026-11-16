@@ -30,8 +30,13 @@ jobs:
           git clone --depth 1 https://github.com/emscripten-core/emsdk.git
           ./emsdk/emsdk install ${{ env.EMSDK_VERSION }}
           ./emsdk/emsdk activate ${{ env.EMSDK_VERSION }}
-          rm -rf emsdk/upstream/emscripten/cmake
-          echo "$(pwd)/emsdk/upstream/emscripten" >> $GITHUB_PATH
+          # Append (do not prepend) emsdk to PATH so the system `cmake`
+          # binary is still found first. `emsdk/upstream/emscripten`
+          # contains a sub-directory called `cmake/` (the toolchain
+          # module) which would otherwise shadow the real `cmake`
+          # executable, causing GNU Make's `execvp` to fail with
+          # "Permission denied".
+          echo "PATH=$PATH:$(pwd)/emsdk/upstream/emscripten" >> $GITHUB_ENV
       - run: make -C bindings/webassembly compile
       - run: make -C bindings/webassembly test
       - run: cd bindings/webassembly && npm version ${{ github.ref_name }} && npm publish
@@ -107,7 +112,8 @@ jobs:
       - run: mv bindings/python/dist/docker/dist/*.whl bindings/python/dist
       - run: rm -rf bindings/python/dist/docker
       - run: sha256sum bindings/python/dist/*.whl
-      - run: unzip -t bindings/python/dist/*.whl
+      # `unzip` only takes one archive at a time
+      - run: for wheel in bindings/python/dist/*.whl; do unzip -t "$wheel"; done
 
       - uses: actions/upload-artifact@v4
         with:

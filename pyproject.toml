@@ -1,9 +1,10 @@
 [project]
 name = "json-schema-semver"
-version = "0.1.6"
+version = "0.2.0"
 description = ""
 authors = [
-    {name = "Juan Cruz Viotti", email = "jv@jviotti.com"}
+    {name = "Juan Cruz Viotti", email = "jv@jviotti.com"},
+    {name = "Tom Clark", email = "tom@octue.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.9"

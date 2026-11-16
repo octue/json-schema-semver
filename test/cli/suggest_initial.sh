@@ -23,7 +23,7 @@ JSON
 # Without a base schema, the base version and breaking level do not matter
 run suggest "$SCHEMAS/base.json" --base-version 3.2.1 --breaking patch
 expect_code 0
-grep --quiet '"version": "0.0.1"' "$TMP/stdout"
+grep -q '"version": "0.0.1"' "$TMP/stdout"
 
 run suggest "$SCHEMAS/base.json" --initial-version first
 expect_code 1

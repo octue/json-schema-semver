@@ -29,8 +29,8 @@ JSON
 
 run suggest "$SCHEMAS/major.json" --base="$SCHEMAS/base.json" --base-version=2.3.1
 expect_code 0
-grep --quiet '"version": "3.0.0"' "$TMP/stdout"
-grep --quiet '"change": "major"' "$TMP/stdout"
+grep -q '"version": "3.0.0"' "$TMP/stdout"
+grep -q '"change": "major"' "$TMP/stdout"
 
 run suggest "$SCHEMAS/base.json" --base "$SCHEMAS/base.json" --base-version 2.3.1
 expect_code 0

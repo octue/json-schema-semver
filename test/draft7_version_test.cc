@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <octue/cruzer.h>
+#include <octue/jss.h>
 
 #include "macros.h"
 
-TEST(Cruzer_version_draft7, const_to_enum_superset) {
+TEST(JSS_version_draft7, const_to_enum_superset) {
   const auto from{sourcemeta::core::parse_json(R"JSON({
     "$schema": "http://json-schema.org/draft-07/schema#",
     "const": "foo"

@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <octue/cruzer.h>
+#include <octue/jss.h>
 
 #include "macros.h"
 
-TEST(Cruzer_is_compatible_with_2020_12, test_1) {
+TEST(JSS_is_compatible_with_2020_12, test_1) {
   const auto left{sourcemeta::core::parse_json(R"JSON({
     "title": "Foo",
     "type": "string"
@@ -24,7 +24,7 @@ TEST(Cruzer_is_compatible_with_2020_12, test_1) {
   EXPECT_COMPATIBILITY(right_result, 1, Compatible, "/type", "/type");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12, test_2) {
+TEST(JSS_is_compatible_with_2020_12, test_2) {
   const auto left{sourcemeta::core::parse_json(R"JSON({
     "title": "Foo"
   })JSON")};
@@ -42,7 +42,7 @@ TEST(Cruzer_is_compatible_with_2020_12, test_2) {
   EXPECT_COMPATIBILITY(right_result, 0, Skip, "/type", "/title");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12, test_3) {
+TEST(JSS_is_compatible_with_2020_12, test_3) {
   const auto left{sourcemeta::core::parse_json(R"JSON({
     "type": "string",
     "const": "foo"
@@ -63,7 +63,7 @@ TEST(Cruzer_is_compatible_with_2020_12, test_3) {
   EXPECT_COMPATIBILITY(right_result, 1, Compatible, "/const", "/const");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12, test_4) {
+TEST(JSS_is_compatible_with_2020_12, test_4) {
   const auto left{sourcemeta::core::parse_json(R"JSON({
     "type": "array"
   })JSON")};

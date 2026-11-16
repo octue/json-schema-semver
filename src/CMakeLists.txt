@@ -1,7 +1,7 @@
-sourcemeta_library(PROJECT octue NAME cruzer FOLDER "Octue"
-  SOURCES cruzer.cc instance_locations.cc comparator.h helpers.h)
+sourcemeta_library(PROJECT octue NAME jss FOLDER "Octue"
+  SOURCES jss.cc instance_locations.cc comparator.h helpers.h)
 
-target_link_libraries(octue_cruzer PUBLIC sourcemeta::core::json)
-target_link_libraries(octue_cruzer PUBLIC sourcemeta::core::jsonpointer)
-target_link_libraries(octue_cruzer PUBLIC sourcemeta::core::jsonschema)
-target_link_libraries(octue_cruzer PRIVATE sourcemeta::core::regex)
+target_link_libraries(octue_jss PUBLIC sourcemeta::core::json)
+target_link_libraries(octue_jss PUBLIC sourcemeta::core::jsonpointer)
+target_link_libraries(octue_jss PUBLIC sourcemeta::core::jsonschema)
+target_link_libraries(octue_jss PRIVATE sourcemeta::core::regex)

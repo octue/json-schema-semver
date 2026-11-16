@@ -1,5 +1,5 @@
-#ifndef OCTUE_CRUZER_HELPERS_H_
-#define OCTUE_CRUZER_HELPERS_H_
+#ifndef OCTUE_JSS_HELPERS_H_
+#define OCTUE_JSS_HELPERS_H_
 
 #include <sourcemeta/core/json.h>
 #include <sourcemeta/core/jsonschema.h>

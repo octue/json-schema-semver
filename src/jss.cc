@@ -1,4 +1,4 @@
-#include <octue/cruzer.h>
+#include <octue/jss.h>
 
 #include <algorithm>   // std::ranges::find
 #include <cassert>     // assert
@@ -10,7 +10,7 @@
 #include "helpers.h"
 
 static auto
-effective_subschema(const octue::cruzer::SchemaLocation &location) noexcept
+effective_subschema(const octue::jss::SchemaLocation &location) noexcept
     -> const sourcemeta::core::JSON & {
   const static sourcemeta::core::JSON wildcard{true};
   return location.subschema.get().is_object() &&
@@ -34,9 +34,9 @@ static auto vocabulary_string(
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
-static auto compare_subschemas(const octue::cruzer::SchemaLocation &left,
-                               const octue::cruzer::SchemaLocation &right)
-    -> std::vector<octue::cruzer::Trace> {
+static auto compare_subschemas(const octue::jss::SchemaLocation &left,
+                               const octue::jss::SchemaLocation &right)
+    -> std::vector<octue::jss::Trace> {
   assert(sourcemeta::core::is_schema(left.subschema.get()));
   assert(sourcemeta::core::is_schema(right.subschema.get()));
 
@@ -48,7 +48,7 @@ static auto compare_subschemas(const octue::cruzer::SchemaLocation &left,
   // A simple default to more transparently handle boolean schemas
   constexpr auto BOOLEAN_KEYWORD_NAME{""};
 
-  std::vector<octue::cruzer::Trace> result;
+  std::vector<octue::jss::Trace> result;
 
   if (left.subschema.get().is_object() && right.subschema.get().is_object() &&
       !left.subschema.get().empty() && !right.subschema.get().empty()) {
@@ -62,7 +62,7 @@ static auto compare_subschemas(const octue::cruzer::SchemaLocation &left,
             right.walker(right_entry.first, right_vocabularies)};
         sourcemeta::core::WeakPointer right_new_pointer{right.pointer};
         right_new_pointer.push_back(std::cref(right_entry.first));
-        result.push_back(octue::cruzer::compare(
+        result.push_back(octue::jss::compare(
             left.subschema.get(), left_entry.first,
             vocabulary_string(left_walker_result.vocabulary),
             left_walker_result.type, left_new_pointer, left.instance_location,
@@ -76,7 +76,7 @@ static auto compare_subschemas(const octue::cruzer::SchemaLocation &left,
              (right.subschema.get().is_boolean() ||
               right.subschema.get().empty())) {
     if (left.subschema.get().empty()) {
-      result.push_back(octue::cruzer::compare(
+      result.push_back(octue::jss::compare(
           effective_subschema(left), BOOLEAN_KEYWORD_NAME, std::string_view{},
           sourcemeta::core::SchemaKeywordType::Assertion, left.pointer,
           left.instance_location, effective_subschema(right),
@@ -89,7 +89,7 @@ static auto compare_subschemas(const octue::cruzer::SchemaLocation &left,
             left.walker(left_entry.first, left_vocabularies)};
         sourcemeta::core::WeakPointer left_new_pointer{left.pointer};
         left_new_pointer.push_back(std::cref(left_entry.first));
-        result.push_back(octue::cruzer::compare(
+        result.push_back(octue::jss::compare(
             left.subschema.get(), left_entry.first,
             vocabulary_string(left_walker_result.vocabulary),
             left_walker_result.type, left_new_pointer, left.instance_location,
@@ -102,7 +102,7 @@ static auto compare_subschemas(const octue::cruzer::SchemaLocation &left,
              (left.subschema.get().is_boolean() ||
               left.subschema.get().empty())) {
     if (right.subschema.get().empty()) {
-      result.push_back(octue::cruzer::compare(
+      result.push_back(octue::jss::compare(
           effective_subschema(left), BOOLEAN_KEYWORD_NAME, std::string_view{},
           sourcemeta::core::SchemaKeywordType::Assertion, left.pointer,
           left.instance_location, effective_subschema(right),
@@ -115,7 +115,7 @@ static auto compare_subschemas(const octue::cruzer::SchemaLocation &left,
             right.walker(right_entry.first, right_vocabularies)};
         sourcemeta::core::WeakPointer right_new_pointer{right.pointer};
         right_new_pointer.push_back(std::cref(right_entry.first));
-        result.push_back(octue::cruzer::compare(
+        result.push_back(octue::jss::compare(
             effective_subschema(left), BOOLEAN_KEYWORD_NAME, std::string_view{},
             sourcemeta::core::SchemaKeywordType::Assertion, left.pointer,
             left.instance_location, right.subschema.get(), right_entry.first,
@@ -127,7 +127,7 @@ static auto compare_subschemas(const octue::cruzer::SchemaLocation &left,
   } else {
     assert(left.subschema.get().is_boolean() || left.subschema.get().empty());
     assert(right.subschema.get().is_boolean() || right.subschema.get().empty());
-    result.push_back(octue::cruzer::compare(
+    result.push_back(octue::jss::compare(
         effective_subschema(left), BOOLEAN_KEYWORD_NAME, std::string_view{},
         sourcemeta::core::SchemaKeywordType::Assertion, left.pointer,
         left.instance_location, effective_subschema(right),
@@ -208,7 +208,7 @@ is_annotation_subschema(const sourcemeta::core::SchemaFrame &frame,
   return false;
 }
 
-static auto makes_any_assertion(const octue::cruzer::SchemaLocation &location)
+static auto makes_any_assertion(const octue::jss::SchemaLocation &location)
     -> std::optional<bool> {
   const auto &schema{location.subschema.get()};
   if (schema.is_boolean()) {
@@ -244,7 +244,7 @@ static auto makes_any_assertion(const octue::cruzer::SchemaLocation &location)
   return false;
 }
 
-namespace octue::cruzer {
+namespace octue::jss {
 
 auto is_compatible_with(const SchemaIndex &left, const SchemaIndex &right)
     -> std::vector<Trace> {
@@ -375,7 +375,7 @@ auto index(const sourcemeta::core::SchemaFrame &frame,
       // We don't really need to manipulate the pointer templates
       // for this use case, so we can stringify to simplify the map
       std::ostringstream key;
-      octue::cruzer::stringify(instance_location, key);
+      octue::jss::stringify(instance_location, key);
       result[key.str()].push_back(
           {instance_location, location.second.parent, location.second.pointer,
            sourcemeta::core::get(schema, location.second.pointer), schema,
@@ -497,4 +497,4 @@ auto version(
   }
 }
 
-} // namespace octue::cruzer
+} // namespace octue::jss

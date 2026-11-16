@@ -1,4 +1,4 @@
-#include <octue/cruzer.h>
+#include <octue/jss.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -13,21 +13,21 @@ static auto version(pybind11::object from, pybind11::object to)
   const auto from_json = sourcemeta::core::parse_json(from_string);
   const auto to_json = sourcemeta::core::parse_json(to_string);
 
-  const auto result{octue::cruzer::version(from_json, to_json)};
+  const auto result{octue::jss::version(from_json, to_json)};
   pybind11::dict result_dict;
 
   if (result.version.has_value()) {
     switch (result.version.value()) {
-      case octue::cruzer::SemVer::Major:
+      case octue::jss::SemVer::Major:
         result_dict["version"] = "major";
         break;
-      case octue::cruzer::SemVer::Minor:
+      case octue::jss::SemVer::Minor:
         result_dict["version"] = "minor";
         break;
-      case octue::cruzer::SemVer::Patch:
+      case octue::jss::SemVer::Patch:
         result_dict["version"] = "patch";
         break;
-      case octue::cruzer::SemVer::Equal:
+      case octue::jss::SemVer::Equal:
         result_dict["version"] = "equal";
         break;
     }
@@ -40,16 +40,16 @@ static auto version(pybind11::object from, pybind11::object to)
     pybind11::dict trace_dict;
 
     switch (trace.compatibility) {
-      case octue::cruzer::Compatibility::Compatible:
+      case octue::jss::Compatibility::Compatible:
         trace_dict["compatibility"] = "compatible";
         break;
-      case octue::cruzer::Compatibility::Incompatible:
+      case octue::jss::Compatibility::Incompatible:
         trace_dict["compatibility"] = "incompatible";
         break;
-      case octue::cruzer::Compatibility::Skip:
+      case octue::jss::Compatibility::Skip:
         trace_dict["compatibility"] = "skip";
         break;
-      case octue::cruzer::Compatibility::Unknown:
+      case octue::jss::Compatibility::Unknown:
         trace_dict["compatibility"] = "unknown";
         break;
     }
@@ -87,7 +87,7 @@ static auto get_base_dialect(pybind11::object schema)
   return std::nullopt;
 }
 
-PYBIND11_MODULE(pycruzer, m) {
+PYBIND11_MODULE(json_schema_semver, m) {
   m.def("get_base_dialect", &get_base_dialect,
         "Infer the base dialect from a JSON Schema");
   m.def("version", &version,

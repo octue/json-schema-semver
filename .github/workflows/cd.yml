@@ -94,15 +94,15 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
 
-      - run: docker build --tag pycruzer-arm64 . --file bindings/python/Dockerfile --progress plain --platform linux/arm64
-      - run: docker build --tag pycruzer-amd64 . --file bindings/python/Dockerfile --progress plain --platform linux/amd64
+      - run: docker build --tag json-schema-semver-arm64 . --file bindings/python/Dockerfile --progress plain --platform linux/arm64
+      - run: docker build --tag json-schema-semver-amd64 . --file bindings/python/Dockerfile --progress plain --platform linux/amd64
       - run: sleep 5
-      - run: docker create --name pycruzer-builder-arm64 pycruzer-arm64
-      - run: docker create --name pycruzer-builder-amd64 pycruzer-amd64
+      - run: docker create --name json-schema-semver-builder-arm64 json-schema-semver-arm64
+      - run: docker create --name json-schema-semver-builder-amd64 json-schema-semver-amd64
       - run: sleep 5
       - run: mkdir -p bindings/python/dist/docker
-      - run: docker cp pycruzer-builder-arm64:/source/bindings/python/dist bindings/python/dist/docker
-      - run: docker cp pycruzer-builder-amd64:/source/bindings/python/dist bindings/python/dist/docker
+      - run: docker cp json-schema-semver-builder-arm64:/source/bindings/python/dist bindings/python/dist/docker
+      - run: docker cp json-schema-semver-builder-amd64:/source/bindings/python/dist bindings/python/dist/docker
       - run: sleep 5
       - run: mv bindings/python/dist/docker/dist/*.whl bindings/python/dist
       - run: rm -rf bindings/python/dist/docker

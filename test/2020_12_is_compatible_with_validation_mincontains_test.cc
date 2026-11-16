@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <octue/cruzer.h>
+#include <octue/jss.h>
 
 #include "macros.h"
 
@@ -7,7 +7,7 @@ static const auto schema{sourcemeta::core::parse_json(R"JSON({
   "minContains": 3
 })JSON")};
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_schema) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, core_schema) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema"
   })JSON")};
@@ -16,7 +16,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_schema) {
                                       "/$schema");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_id) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, core_id) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$id": "https://www.example.com"
   })JSON")};
@@ -25,7 +25,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_id) {
                                       "/$id");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_comment) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, core_comment) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$comment": "Foo"
   })JSON")};
@@ -34,7 +34,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_comment) {
                                       "/$comment");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_ref) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, core_ref) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$ref": "#"
   })JSON")};
@@ -43,7 +43,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_ref) {
                                       "/$ref");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_anchor) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, core_anchor) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$anchor": "foo"
   })JSON")};
@@ -52,7 +52,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_anchor) {
                                       "/$anchor");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      core_dynamicanchor) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$dynamicAnchor": "foo"
@@ -62,8 +62,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/$dynamicAnchor");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
-     core_vocabulary) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, core_vocabulary) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$vocabulary": {
       "https://json-schema.org/draft/2020-12/vocab/core": true
@@ -74,7 +73,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/$vocabulary");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_defs) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, core_defs) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$defs": {
       "foo": false
@@ -85,8 +84,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, core_defs) {
                                       "/$defs");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
-     core_definitions) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, core_definitions) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "definitions": {
       "foo": false
@@ -97,7 +95,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/definitions");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, metadata_title) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, metadata_title) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "title": "Foo"
   })JSON")};
@@ -106,7 +104,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains, metadata_title) {
                                       "/title");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      metadata_description) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "description": "Foo"
@@ -116,8 +114,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/description");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
-     metadata_default) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, metadata_default) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "default": "Foo"
   })JSON")};
@@ -126,7 +123,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/default");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      metadata_deprecated) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "deprecated": true
@@ -136,8 +133,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/deprecated");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
-     metadata_examples) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, metadata_examples) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "examples": [ 1 ]
   })JSON")};
@@ -146,8 +142,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/examples");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
-     metadata_readonly) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, metadata_readonly) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "readOnly": true
   })JSON")};
@@ -156,7 +151,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/readOnly");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      metadata_writeonly) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "writeOnly": true
@@ -166,7 +161,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/writeOnly");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      content_contentencoding) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "contentEncoding": "base64"
@@ -176,7 +171,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/contentEncoding");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      content_contentmediatype) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "contentMediaType": "application/yaml"
@@ -186,7 +181,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/contentMediaType");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      content_contentschema) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "contentSchema": { "type": "string" }
@@ -196,7 +191,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/contentSchema");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      format_annotation_format) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "format": "email"
@@ -206,8 +201,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/format");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
-     validation_type) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, validation_type) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "type": "array"
   })JSON")};
@@ -216,8 +210,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/type");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
-     validation_const) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, validation_const) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "const": [ [ 1 ] ]
   })JSON")};
@@ -226,8 +219,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/const");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
-     validation_enum) {
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains, validation_enum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "enum": [ [ 1, 2, 3 ], [ [ 1 ] ] ]
   })JSON")};
@@ -236,7 +228,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/enum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_required) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "required": [ "foo" ]
@@ -246,7 +238,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/required");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_uniqueitems_false) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "uniqueItems": false
@@ -256,7 +248,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/uniqueItems");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_uniqueitems_true) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "uniqueItems": true
@@ -266,7 +258,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/uniqueItems");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_pattern) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "pattern": "^f"
@@ -276,7 +268,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/pattern");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_minimum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minimum": 0
@@ -286,7 +278,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/minimum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_maximum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maximum": 0
@@ -296,7 +288,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/maximum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_exclusiveminimum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "exclusiveMinimum": 0
@@ -306,7 +298,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/exclusiveMinimum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_exclusivemaximum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "exclusiveMaximum": 0
@@ -316,7 +308,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/exclusiveMaximum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_minlength) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minLength": 3
@@ -326,7 +318,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/minLength");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_maxlength) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maxLength": 3
@@ -336,7 +328,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/maxLength");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_minitems) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minItems": 3
@@ -346,7 +338,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/minItems");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_maxitems) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maxItems": 3
@@ -356,7 +348,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/maxItems");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_minproperties) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minProperties": 3
@@ -366,7 +358,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/minProperties");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_maxproperties) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maxProperties": 3
@@ -376,7 +368,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/maxProperties");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_mincontains) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minContains": 4
@@ -386,7 +378,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/minContains");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_maxcontains) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maxContains": 3
@@ -396,7 +388,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/maxContains");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_multipleof) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "multipleOf": 3
@@ -406,7 +398,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/multipleOf");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_dependentrequired) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "dependentRequired": { "foo": [ "bar" ] }
@@ -416,7 +408,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/dependentRequired");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_properties) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "properties": { "foo": { "type": "string" } }
@@ -426,7 +418,7 @@ TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
                                       "/properties");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_validation_mincontains,
+TEST(JSS_is_compatible_with_2020_12_validation_mincontains,
      validation_patternproperties) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "patternProperties": { "^f": { "type": "string" } }

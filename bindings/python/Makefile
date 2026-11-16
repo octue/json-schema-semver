@@ -14,5 +14,5 @@ compile: wrapper.cc
 
 .PHONY: test
 test: test.py
-	$(PIP) install dist/pycruzer-*.whl
+	$(PIP) install dist/json_schema_semver-*.whl
 	$(PYTHON) $<

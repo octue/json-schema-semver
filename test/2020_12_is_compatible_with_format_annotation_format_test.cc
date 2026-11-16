@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <octue/cruzer.h>
+#include <octue/jss.h>
 
 #include "macros.h"
 
@@ -7,7 +7,7 @@ static const auto schema{sourcemeta::core::parse_json(R"JSON({
   "format": "email"
 })JSON")};
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_schema) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, core_schema) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$schema": "https://json-schema.org/draft/2020-12/schema"
   })JSON")};
@@ -16,7 +16,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_schema) {
                                       "/$schema");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_id) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, core_id) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$id": "https://www.example.com"
   })JSON")};
@@ -24,7 +24,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_id) {
   EXPECT_COMPATIBILITY_SINGLE_2020_12(schema, right, Skip, "/format", "/$id");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_comment) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, core_comment) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$comment": "Foo"
   })JSON")};
@@ -33,7 +33,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_comment) {
                                       "/$comment");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_ref) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, core_ref) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$ref": "#"
   })JSON")};
@@ -41,7 +41,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_ref) {
   EXPECT_COMPATIBILITY_SINGLE_2020_12(schema, right, Skip, "/format", "/$ref");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_anchor) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, core_anchor) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$anchor": "foo"
   })JSON")};
@@ -50,7 +50,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_anchor) {
                                       "/$anchor");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      core_dynamicanchor) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$dynamicAnchor": "foo"
@@ -60,8 +60,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/$dynamicAnchor");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
-     core_vocabulary) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, core_vocabulary) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$vocabulary": {
       "https://json-schema.org/draft/2020-12/vocab/core": true
@@ -72,7 +71,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/$vocabulary");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_defs) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, core_defs) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "$defs": {
       "foo": false
@@ -82,7 +81,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format, core_defs) {
   EXPECT_COMPATIBILITY_SINGLE_2020_12(schema, right, Skip, "/format", "/$defs");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      core_definitions) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "definitions": {
@@ -94,8 +93,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/definitions");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
-     metadata_title) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, metadata_title) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "title": "Foo"
   })JSON")};
@@ -103,7 +101,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
   EXPECT_COMPATIBILITY_SINGLE_2020_12(schema, right, Skip, "/format", "/title");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      metadata_description) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "description": "Foo"
@@ -113,7 +111,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/description");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      metadata_default) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "default": "Foo"
@@ -123,7 +121,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/default");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      metadata_deprecated) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "deprecated": true
@@ -133,7 +131,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/deprecated");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      metadata_examples) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "examples": [ 1 ]
@@ -143,7 +141,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/examples");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      metadata_readonly) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "readOnly": true
@@ -153,7 +151,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/readOnly");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      metadata_writeonly) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "writeOnly": true
@@ -163,7 +161,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/writeOnly");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      content_contentencoding) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "contentEncoding": "base64"
@@ -173,7 +171,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/contentEncoding");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      content_contentmediatype) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "contentMediaType": "application/yaml"
@@ -183,7 +181,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/contentMediaType");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      content_contentschema) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "contentSchema": { "type": "string" }
@@ -193,7 +191,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/contentSchema");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      format_annotation_format) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "format": "email"
@@ -203,8 +201,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/format");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
-     validation_type) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, validation_type) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "type": "string"
   })JSON")};
@@ -212,7 +209,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
   EXPECT_COMPATIBILITY_SINGLE_2020_12(schema, right, Skip, "/format", "/type");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_const) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "const": 1
@@ -221,8 +218,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
   EXPECT_COMPATIBILITY_SINGLE_2020_12(schema, right, Skip, "/format", "/const");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
-     validation_enum) {
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format, validation_enum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "enum": [ 1, 2, 3 ]
   })JSON")};
@@ -230,7 +226,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
   EXPECT_COMPATIBILITY_SINGLE_2020_12(schema, right, Skip, "/format", "/enum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_required) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "required": [ "foo" ]
@@ -240,7 +236,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/required");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_uniqueitems) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "uniqueItems": true
@@ -250,7 +246,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/uniqueItems");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_pattern) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "pattern": "^foo"
@@ -260,7 +256,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/pattern");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_minimum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minimum": 4
@@ -270,7 +266,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/minimum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_maximum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maximum": 5
@@ -280,7 +276,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/maximum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_exclusiveminimum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "exclusiveMinimum": 4
@@ -290,7 +286,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/exclusiveMinimum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_exclusivemaximum) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "exclusiveMaximum": 5
@@ -300,7 +296,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/exclusiveMaximum");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_minlength) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minLength": 4
@@ -310,7 +306,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/minLength");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_maxlength) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maxLength": 5
@@ -320,7 +316,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/maxLength");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_minitems) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minItems": 4
@@ -330,7 +326,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/minItems");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_maxitems) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maxItems": 5
@@ -340,7 +336,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/maxItems");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_minproperties) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minProperties": 4
@@ -350,7 +346,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/minProperties");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_maxproperties) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maxProperties": 5
@@ -360,7 +356,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/maxProperties");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_mincontains) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "minContains": 4
@@ -370,7 +366,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/minContains");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_maxcontains) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "maxContains": 5
@@ -380,7 +376,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/maxContains");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_multipleof) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "multipleOf": 2
@@ -390,7 +386,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/multipleOf");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_dependentrequired) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "dependentRequired": { "foo": [ "bar" ] }
@@ -400,7 +396,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/dependentRequired");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_properties) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "properties": { "foo": { "type": "string" } }
@@ -410,7 +406,7 @@ TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
                                       "/properties");
 }
 
-TEST(Cruzer_is_compatible_with_2020_12_format_annotation_format,
+TEST(JSS_is_compatible_with_2020_12_format_annotation_format,
      validation_patternproperties) {
   const auto right{sourcemeta::core::parse_json(R"JSON({
     "patternProperties": { "^f": { "type": "string" } }

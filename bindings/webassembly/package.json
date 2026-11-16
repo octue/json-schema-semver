@@ -1,10 +1,10 @@
 {
-  "name": "@octue/version-cruzer",
-  "main": "cruzer.js",
+  "name": "@octue/json-schema-semver",
+  "main": "json-schema-semver.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/octue/version-cruzer.git"
+    "url": "https://github.com/octue/json-schema-semver.git"
   },
   "type": "module",
-  "types": "cruzer.d.ts"
+  "types": "json-schema-semver.d.ts"
 }

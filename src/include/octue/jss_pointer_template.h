@@ -1,5 +1,5 @@
-#ifndef OCTUE_CRUZER_POINTER_TEMPLATE_H_
-#define OCTUE_CRUZER_POINTER_TEMPLATE_H_
+#ifndef OCTUE_JSS_POINTER_TEMPLATE_H_
+#define OCTUE_JSS_POINTER_TEMPLATE_H_
 
 #include <sourcemeta/core/json.h>
 #include <sourcemeta/core/jsonpointer.h>
@@ -13,7 +13,7 @@
 #include <variant>          // std::variant, std::holds_alternative, std::get
 #include <vector>           // std::vector
 
-namespace octue::cruzer {
+namespace octue::jss {
 
 class PointerTemplate {
 public:
@@ -132,6 +132,6 @@ stringify(const PointerTemplate &pointer,
   }
 }
 
-} // namespace octue::cruzer
+} // namespace octue::jss
 
 #endif

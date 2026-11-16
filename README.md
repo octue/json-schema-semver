@@ -154,12 +154,12 @@ change. `compare` prints only the type of change, as `{ "version": "minor",
 
 ## WebAssembly bindings
 
-The npm package is attached to each release, so it can be installed without a
-token:
-
 ```sh
-npm install https://github.com/octue/json-schema-semver/releases/download/v0.2.0/octue-json-schema-semver-0.2.0.tgz
+npm install @octue/json-schema-semver
 ```
+
+The package is WebAssembly, so it works on any platform with Node.js. It is
+also attached to each release as a tarball.
 
 ```js
 import { suggest, version } from '@octue/json-schema-semver';
@@ -175,8 +175,7 @@ await version(base, proposed);
 ```
 
 `suggest` rejects if a version is invalid or too high for the stage.
-The package is also published to GitHub Packages as
-`@octue/json-schema-semver`.
+The package is also published to GitHub Packages under the same name.
 
 ## Python bindings
 
@@ -256,7 +255,7 @@ git tag --annotate v1.2.3 --message v1.2.3
 This builds the command-line tool, the Python wheels and the npm package,
 attaches them all to a new GitHub release, publishes the npm package to GitHub
 Packages, checks that the GitHub Action works against the new release, and
-finally publishes the wheels to PyPI.
+finally publishes the wheels to PyPI and the npm package to npmjs.com.
 
 The same artefacts are built and tested on every pull request into `main`,
 without publishing anything, so a release should not be the first time a

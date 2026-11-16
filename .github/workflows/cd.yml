@@ -314,3 +314,30 @@ jobs:
           merge-multiple: true
       - run: ls -l dist
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+  # Publish the npm package to npmjs.com with trusted publishing, which needs
+  # no token. The package on npmjs.com must have this repository, this
+  # workflow file (`cd.yml`) and the `npm` environment set up as a trusted
+  # publisher. This publishes the same tarball that is attached to the release
+  npmjs:
+    needs: [ npm, github, action-release ]
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/@octue/json-schema-semver
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      # Trusted publishing needs npm 11.5.1 or later
+      - run: npm install --global npm@11 && npm --version
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+          path: dist
+      - run: ls -l dist
+      - run: npm publish dist/*.tgz --access public

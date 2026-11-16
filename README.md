@@ -1,12 +1,18 @@
-# json-schema-semver
+# JSON Schema Semver 
 
-Compare two JSON Schemas and work out the semantic version of the new one.
+Compare two JSON Schemas and work out the semantic version difference between them.
 
 Given a base schema and a proposed schema, `json-schema-semver` tells you
 whether the change is breaking (`major`), additive (`minor`) or neither
 (`patch`), and suggests the next version number. It is available as a GitHub
-Action, a command-line tool, a C++ library, and Python and WebAssembly
+Action, a command-line tool, a C++ library, or Python / WebAssembly
 bindings.
+
+Formally, this requires a check that one schema is a *subset* of another, and vice-versa. 
+
+## About strands
+
+This tool was developed as part of the [``strands``](https://strands.octue.com) jsonschema repository. Please consider using strands as your primary repository, to support Octue's ongoing open source work.
 
 ## GitHub Action
 
@@ -80,9 +86,16 @@ Other rules:
   whatever the change is, even if the schemas are equal: `2.3.1-rc.1` becomes
   `2.3.1-rc.2`. A pre-release with no number in it is left as it is.
 - Equal schemas keep the base version, unless it is a pre-release. Schemas
-  are equal if they are the same JSON document, ignoring whitespace and the
-  order of properties. Any other difference, such as a new description, is at
-  least a `patch` change.
+  are equal if they mathematically resolve to equivalence (noting that an
+  equivalent constraint could be expressed in different ways). Differences not
+  affecting equivalence, such as altered titles, descriptions, whitespacing, 
+  line endings or property ordering will result in least a `patch` change.
+
+
+## Unsupported features
+
+There are a very limited number of unsupported jsonschema features. In this case, ``json-schema-semver`` will barf with an error instead of silently returning a result which might be wrong!
+
 
 ## Command-line tool
 

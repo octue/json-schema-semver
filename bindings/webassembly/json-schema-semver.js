@@ -17,7 +17,7 @@ export async function suggest(base, proposed, options = {}) {
     effective_base,
     effective_proposed,
     options.baseVersion ?? '',
-    options.breaking ?? 'major',
+    options.stage ?? 'stable',
     options.initialVersion ?? '0.0.1');
   if (typeof result.error === 'string') {
     throw new Error(result.error);

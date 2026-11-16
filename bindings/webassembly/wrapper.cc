@@ -58,15 +58,15 @@ static auto version(const std::string &from, const std::string &to)
 // arguments are reported as `{ error: "..." }`, and the JavaScript wrapper
 // turns that into an exception. An empty base or base version means none
 static auto suggest(const std::string &base, const std::string &proposed,
-                    const std::string &base_version,
-                    const std::string &breaking,
+                    const std::string &base_version, const std::string &stage,
                     const std::string &initial_version) -> emscripten::val {
   emscripten::val result_json = emscripten::val::object();
-  const auto breaking_level{octue::jss::to_breaking(breaking)};
-  if (!breaking_level.has_value()) {
+  const auto stage_value{octue::jss::to_stage(stage)};
+  if (!stage_value.has_value()) {
     result_json.set(
         "error",
-        std::string{"`breaking` must be one of 'major', 'minor' or 'patch'"});
+        std::string{
+            "`stage` must be one of 'stable', 'development' or 'prototype'"});
     return result_json;
   }
 
@@ -82,11 +82,11 @@ static auto suggest(const std::string &base, const std::string &proposed,
         base_json, proposed_json,
         base_version.empty() ? std::nullopt
                              : std::optional<std::string>{base_version},
-        breaking_level.value(), initial_version);
+        stage_value.value(), initial_version);
   } catch (const octue::jss::InvalidVersionError &error) {
     result_json.set("error", std::string{error.what()});
     return result_json;
-  } catch (const octue::jss::BreakingLevelError &error) {
+  } catch (const octue::jss::StageError &error) {
     result_json.set("error", std::string{error.what()});
     return result_json;
   }

@@ -133,23 +133,23 @@ test('suggest: equal pre-release', async (t) => {
   assert.equal(result.change, 'equal');
 });
 
-test('suggest: breaking levels', async (t) => {
+test('suggest: stages', async (t) => {
   assert.equal((await suggest(SCHEMA_BASE, SCHEMA_MAJOR,
     { baseVersion: '0.3.1' })).version, '1.0.0');
   assert.equal((await suggest(SCHEMA_BASE, SCHEMA_MAJOR,
-    { baseVersion: '0.3.1', breaking: 'major' })).version, '1.0.0');
+    { baseVersion: '0.3.1', stage: 'stable' })).version, '1.0.0');
   assert.equal((await suggest(SCHEMA_BASE, SCHEMA_MAJOR,
-    { baseVersion: '0.3.1', breaking: 'minor' })).version, '0.4.0');
+    { baseVersion: '0.3.1', stage: 'development' })).version, '0.4.0');
   assert.equal((await suggest(SCHEMA_BASE, SCHEMA_MAJOR,
-    { baseVersion: '0.0.3', breaking: 'patch' })).version, '0.0.4');
+    { baseVersion: '0.0.3', stage: 'prototype' })).version, '0.0.4');
 });
 
-test('suggest: base version too high for the breaking level', async (t) => {
+test('suggest: base version too high for the stage', async (t) => {
   await assert.rejects(
     suggest(SCHEMA_BASE, SCHEMA_MAJOR,
-      { baseVersion: '0.3.1', breaking: 'patch' }),
-    { message: 'A breaking change cannot bump the patch number of version ' +
-        '0.3.1: the `breaking` level must be `minor` or `major`' });
+      { baseVersion: '0.3.1', stage: 'prototype' }),
+    { message: 'Version 0.3.1 is too high for the `prototype` stage: ' +
+        'the stage must be `development` or `stable`' });
 });
 
 test('suggest: invalid base version', async (t) => {
@@ -158,11 +158,11 @@ test('suggest: invalid base version', async (t) => {
     { message: 'Not a valid semantic version: 1.2' });
 });
 
-test('suggest: invalid breaking level', async (t) => {
+test('suggest: invalid stage', async (t) => {
   await assert.rejects(
     suggest(SCHEMA_BASE, SCHEMA_MAJOR,
-      { baseVersion: '1.2.3', breaking: 'huge' }),
-    { message: "`breaking` must be one of 'major', 'minor' or 'patch'" });
+      { baseVersion: '1.2.3', stage: 'huge' }),
+    { message: "`stage` must be one of 'stable', 'development' or 'prototype'" });
 });
 
 test('suggest: unknown', async (t) => {

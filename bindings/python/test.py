@@ -123,26 +123,26 @@ class TestSuggest(unittest.TestCase):
         self.assertEqual(result["version"], "2.3.1-rc1")
         self.assertEqual(result["change"], "equal")
 
-    def test_breaking_levels(self):
+    def test_stage_values(self):
         self.assertEqual(json_schema_semver.suggest(
             SCHEMA_BASE, SCHEMA_MAJOR, "0.3.1")["version"], "1.0.0")
         self.assertEqual(json_schema_semver.suggest(
             SCHEMA_BASE, SCHEMA_MAJOR, "0.3.1",
-            breaking="major")["version"], "1.0.0")
+            stage="stable")["version"], "1.0.0")
         self.assertEqual(json_schema_semver.suggest(
             SCHEMA_BASE, SCHEMA_MAJOR, "0.3.1",
-            breaking="minor")["version"], "0.4.0")
+            stage="development")["version"], "0.4.0")
         self.assertEqual(json_schema_semver.suggest(
             SCHEMA_BASE, SCHEMA_MAJOR, "0.0.3",
-            breaking="patch")["version"], "0.0.4")
+            stage="prototype")["version"], "0.0.4")
 
-    def test_base_version_too_high_for_the_breaking_level(self):
+    def test_base_version_too_high_for_the_stage_value(self):
         with self.assertRaises(ValueError) as context:
             json_schema_semver.suggest(
-                SCHEMA_BASE, SCHEMA_MAJOR, "0.3.1", breaking="patch")
+                SCHEMA_BASE, SCHEMA_MAJOR, "0.3.1", stage="prototype")
         self.assertEqual(str(context.exception),
-            "A breaking change cannot bump the patch number of version "
-            "0.3.1: the `breaking` level must be `minor` or `major`")
+            "Version 0.3.1 is too high for the `prototype` stage: "
+            "the stage must be `development` or `stable`")
 
     def test_invalid_base_version(self):
         with self.assertRaises(ValueError) as context:
@@ -150,10 +150,10 @@ class TestSuggest(unittest.TestCase):
         self.assertEqual(str(context.exception),
             "Not a valid semantic version: 1.2")
 
-    def test_invalid_breaking_level(self):
+    def test_invalid_stage_value(self):
         with self.assertRaises(ValueError):
             json_schema_semver.suggest(
-                SCHEMA_BASE, SCHEMA_MAJOR, "1.2.3", breaking="huge")
+                SCHEMA_BASE, SCHEMA_MAJOR, "1.2.3", stage="huge")
 
     def test_unknown(self):
         schema = {

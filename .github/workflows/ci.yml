@@ -100,14 +100,14 @@ jobs:
           -DBUILD_SHARED_LIBS:BOOL=OFF
       - run: cmake --build ./build --config Release --target octue_jss_cli --parallel 4
 
-      - name: Minor change at the minor breaking level
+      - name: Minor change at the development stage
         id: minor
         uses: ./
         with:
           path: test/cli/schemas/minor.json
           base_path: test/cli/schemas/base.json
           base_version: 0.3.1
-          breaking: minor
+          stage: development
           cli_path: build/cli/json-schema-semver
       - run: |
           test "${{ steps.minor.outputs.version }}" = "0.4.0"
@@ -116,7 +116,7 @@ jobs:
         env:
           TRACES: ${{ steps.minor.outputs.traces }}
 
-      - name: Breaking change at the default breaking level
+      - name: Breaking change at the default stage
         id: major
         uses: ./
         with:
@@ -128,14 +128,14 @@ jobs:
           test "${{ steps.major.outputs.version }}" = "1.0.0"
           test "${{ steps.major.outputs.change }}" = "major"
 
-      - name: Breaking change at the patch breaking level
+      - name: Breaking change at the prototype stage
         id: patch
         uses: ./
         with:
           path: test/cli/schemas/major.json
           base_path: test/cli/schemas/base.json
           base_version: 0.0.3
-          breaking: patch
+          stage: prototype
           cli_path: build/cli/json-schema-semver
       - run: |
           test "${{ steps.patch.outputs.version }}" = "0.0.4"
@@ -172,17 +172,17 @@ jobs:
           test "${{ steps.no_base_version.outputs.version }}" = ""
           test "${{ steps.no_base_version.outputs.change }}" = "minor"
 
-      - name: Base version too high for the breaking level
-        id: breaking_error
+      - name: Base version too high for the stage
+        id: stage_error
         continue-on-error: true
         uses: ./
         with:
           path: test/cli/schemas/major.json
           base_path: test/cli/schemas/base.json
           base_version: 0.3.1
-          breaking: patch
+          stage: prototype
           cli_path: build/cli/json-schema-semver
-      - run: test "${{ steps.breaking_error.outcome }}" = "failure"
+      - run: test "${{ steps.stage_error.outcome }}" = "failure"
 
       - name: Schemas that cannot be compared
         id: unknown

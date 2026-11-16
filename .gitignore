@@ -46,3 +46,6 @@
 # Build dirs
 cmake-build-debug
 cmake-build-release
+
+# Local environment files
+.env

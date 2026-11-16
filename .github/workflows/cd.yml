@@ -415,4 +415,6 @@ jobs:
         run: ls -l dist
 
       - name: Publish to npmjs
-        run: npm publish dist/*.tgz --access public
+        # The leading `./` matters: without it, npm reads `dist/<file>` as a
+        # GitHub `owner/repository` shorthand and tries to clone it
+        run: npm publish ./dist/*.tgz --access public
